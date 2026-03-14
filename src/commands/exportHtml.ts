@@ -4,20 +4,26 @@ import { HtmlExporter } from '../exporter/HtmlExporter';
 
 export function registerExportHtml(context: vscode.ExtensionContext): void {
   context.subscriptions.push(
-    vscode.commands.registerCommand('xmarkdown2pdf.exportHtml', async () => {
-      const editor = vscode.window.activeTextEditor;
-      if (!editor || editor.document.languageId !== 'markdown') {
-        vscode.window.showWarningMessage('Open a Markdown file first.');
-        return;
+    vscode.commands.registerCommand('xmarkdown2pdf.exportHtml', async (uri?: vscode.Uri) => {
+      let document: vscode.TextDocument;
+      if (uri) {
+        document = await vscode.workspace.openTextDocument(uri);
+      } else {
+        const editor = vscode.window.activeTextEditor;
+        if (!editor || editor.document.languageId !== 'markdown') {
+          vscode.window.showWarningMessage('Open a Markdown file first.');
+          return;
+        }
+        document = editor.document;
       }
 
-      const mdPath = editor.document.uri.fsPath;
+      const mdPath = document.uri.fsPath;
       const outPath = mdPath.replace(/\.md$/i, '.html');
 
       await vscode.window.withProgress(
         { location: vscode.ProgressLocation.Notification, title: 'Exporting HTML…', cancellable: false },
         async () => {
-          await HtmlExporter.export(editor.document.getText(), outPath, context);
+          await HtmlExporter.export(document.getText(), outPath, context);
         }
       );
 

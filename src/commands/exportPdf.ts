@@ -7,20 +7,26 @@ const pipeline = new MarkdownPipeline();
 
 export function registerExportPdf(context: vscode.ExtensionContext): void {
   context.subscriptions.push(
-    vscode.commands.registerCommand('xmarkdown2pdf.exportPdf', async () => {
-      const editor = vscode.window.activeTextEditor;
-      if (!editor || editor.document.languageId !== 'markdown') {
-        vscode.window.showWarningMessage('Open a Markdown file first.');
-        return;
+    vscode.commands.registerCommand('xmarkdown2pdf.exportPdf', async (uri?: vscode.Uri) => {
+      let document: vscode.TextDocument;
+      if (uri) {
+        document = await vscode.workspace.openTextDocument(uri);
+      } else {
+        const editor = vscode.window.activeTextEditor;
+        if (!editor || editor.document.languageId !== 'markdown') {
+          vscode.window.showWarningMessage('Open a Markdown file first.');
+          return;
+        }
+        document = editor.document;
       }
 
-      const mdPath = editor.document.uri.fsPath;
+      const mdPath = document.uri.fsPath;
       const outPath = mdPath.replace(/\.md$/i, '.pdf');
 
       await vscode.window.withProgress(
         { location: vscode.ProgressLocation.Notification, title: 'Exporting PDF…', cancellable: false },
         async () => {
-          const fragment = await pipeline.render(editor.document.getText());
+          const fragment = await pipeline.render(document.getText());
           await PdfExporter.export(fragment, outPath, context);
         }
       );

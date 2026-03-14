@@ -46,6 +46,23 @@
       }
     ],
     "menus": {
+      "explorer/context": [
+        {
+          "command": "xmarkdown2pdf.openPreview",
+          "when": "resourceExtname == .md",
+          "group": "navigation"
+        },
+        {
+          "command": "xmarkdown2pdf.exportHtml",
+          "when": "resourceExtname == .md",
+          "group": "1_export@1"
+        },
+        {
+          "command": "xmarkdown2pdf.exportPdf",
+          "when": "resourceExtname == .md",
+          "group": "1_export@2"
+        }
+      ],
       "editor/title": [
         {
           "command": "xmarkdown2pdf.openPreview",
