@@ -1,0 +1,36 @@
+# Source (bundled by esbuild into dist/extension.js)
+src/**
+__mocks__/**
+test/**
+*.ts
+
+# Build config
+tsconfig.json
+tsconfig.test.json
+jest.config.js
+esbuild.js
+
+# Build artifacts (source maps)
+dist/**/*.map
+
+# Node modules (all deps bundled by esbuild)
+node_modules/**
+
+# Dev / CI
+.github/**
+coverage/**
+.gitignore
+.eslintrc*
+
+# Documentation / samples (not needed at runtime)
+ARCHITECTURE.md
+requirements.md
+requirements.pdf
+sample.md
+sample.html
+sample.pdf
+xmarkdown2pdf.code-workspace
+
+# Packaging artifacts
+*.vsix
+.vscodeignore

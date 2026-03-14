@@ -1,0 +1,18 @@
+node_modules/
+dist/
+out/
+*.vsix
+media/libs/
+
+# Generated outputs
+sample.html
+sample.pdf
+requirements.pdf
+
+# Test coverage
+coverage/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+*.log

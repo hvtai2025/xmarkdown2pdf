@@ -1,0 +1,199 @@
+# xMarkdown2PDF
+
+Convert Markdown with Mermaid and PlantUML to HTML or PDF directly inside VS Code.
+
+xMarkdown2PDF is built for teams that want a focused workflow:
+- live side-by-side preview while editing Markdown
+- local HTML export
+- local PDF export
+- Mermaid support in preview and export
+- PlantUML support in preview and export
+- versioned runtime libraries that you can upgrade intentionally
+
+It is not trying to be a full Markdown authoring platform. The goal is a smaller, clearer extension for documentation workflows that depend on diagrams.
+
+## Why This Extension Exists
+
+The VS Code marketplace already has strong Markdown and diagram extensions. xMarkdown2PDF fits in the gap between them:
+
+| Extension | Main focus | Mermaid | PlantUML | Live preview | HTML export | PDF export | Library version control |
+|---|---|---|---|---|---|---|---|
+| xMarkdown2PDF | Focused Markdown to HTML/PDF with diagrams | Yes | Yes | Yes | Yes | Yes | Yes |
+| Markdown PDF (`yzane.markdown-pdf`) | Broad export toolchain with many output options | Yes | Yes | Limited to export-oriented workflow | Yes | Yes | No explicit managed library workflow |
+| Markdown Preview Enhanced (`shd101wyy.markdown-preview-enhanced`) | Full Markdown authoring platform | Yes | Yes | Yes | Yes | Yes | No explicit managed library workflow |
+| Markdown Preview Mermaid Support (`bierner.markdown-mermaid`) | Mermaid in built-in preview | Yes | No | Yes | No | No | No |
+| PlantUML (`jebbs.plantuml`) | Dedicated PlantUML authoring and export | No | Yes | Yes | Diagram export, not Markdown document export | Diagram export, not Markdown document export | No |
+
+## When xMarkdown2PDF Is a Better Fit
+
+Choose xMarkdown2PDF if you want:
+- one extension for Markdown preview plus document export
+- Mermaid and PlantUML in the same Markdown document
+- a smaller feature surface than Markdown Preview Enhanced
+- HTML and PDF output from the same rendering pipeline
+- a controlled way to update embedded runtime libraries
+
+Choose other extensions if you want:
+- PNG or JPEG export: Markdown PDF is broader here
+- advanced Markdown notebooks, code chunks, Pandoc, presentations, or publishing workflows: Markdown Preview Enhanced is broader here
+- rich PlantUML authoring features such as snippets, symbol navigation, and standalone diagram project workflows: PlantUML is stronger here
+- only Mermaid in the built-in VS Code preview: Markdown Preview Mermaid Support is simpler here
+
+## Features
+
+- Preview Markdown in a side-by-side webview panel
+- Auto-refresh preview while you edit
+- Scroll sync from editor selection to preview
+- Export `.md` to `.html`
+- Export `.md` to `.pdf`
+- Render Mermaid diagrams in preview and export
+- Render PlantUML diagrams to inline SVG before export
+- Support PlantUML render modes:
+  - local
+  - self-hosted PlantUML server
+  - Kroki
+- Upgrade bundled runtime libraries with a command
+- Theme support for preview and export:
+  - `github`
+  - `dark`
+  - `custom`
+
+## Commands
+
+| Command | Description |
+|---|---|
+| `xmarkdown2pdf.openPreview` | Open the live preview beside the active Markdown editor |
+| `xmarkdown2pdf.exportHtml` | Export the active Markdown file to HTML |
+| `xmarkdown2pdf.exportPdf` | Export the active Markdown file to PDF |
+| `xmarkdown2pdf.upgradeLibs` | Upgrade managed runtime libraries |
+
+Default keybinding:
+- `Ctrl+Shift+V` opens the xMarkdown2PDF preview for Markdown files
+
+## Installation
+
+### From VS Code Marketplace
+
+Search for `xMarkdown2PDF` in Extensions.
+
+### From a VSIX file
+
+```bash
+code --install-extension /absolute/path/to/xmarkdown2pdf-0.1.0.vsix
+```
+
+## Quick Start
+
+1. Open a Markdown file.
+2. Run `Markdown: Open Preview (WYSIWYG)`.
+3. Add Mermaid or PlantUML fenced code blocks.
+4. Run `Markdown: Export to HTML` or `Markdown: Export to PDF`.
+
+Exported files are written next to the source Markdown file using the same base name.
+
+## Example
+
+### Mermaid
+
+````markdown
+```mermaid
+flowchart TD
+    A[Start] --> B{Build docs?}
+    B -->|Yes| C[Render diagrams]
+    B -->|No| D[Skip]
+    C --> E[Export HTML and PDF]
+```
+````
+
+### PlantUML
+
+````markdown
+```plantuml
+@startuml
+actor User
+User -> System: Export markdown
+System --> User: HTML / PDF
+@enduml
+```
+````
+
+A larger sample document is included in the extension package as `sample.md`.
+
+## Settings
+
+| Setting | Description | Default |
+|---|---|---|
+| `xmarkdown2pdf.pdf.format` | PDF page format | `A4` |
+| `xmarkdown2pdf.pdf.margin` | PDF margins | `20mm` on all sides |
+| `xmarkdown2pdf.pdf.printBackground` | Print backgrounds in PDF | `true` |
+| `xmarkdown2pdf.plantuml.renderMode` | PlantUML render backend | `local` |
+| `xmarkdown2pdf.plantuml.serverUrl` | PlantUML server URL when using server mode | empty |
+| `xmarkdown2pdf.plantuml.jarPath` | Path to `plantuml.jar` for local mode | empty |
+| `xmarkdown2pdf.preview.scrollSync` | Sync editor selection to preview | `true` |
+| `xmarkdown2pdf.preview.theme` | Preview/export theme | `github` |
+| `xmarkdown2pdf.preview.customCssPath` | Custom CSS path for `custom` theme | empty |
+
+## PlantUML Modes
+
+### Local
+
+Use local PlantUML rendering when you want an offline workflow. In practice, this usually means:
+- Java is available
+- `plantuml.jar` is available if your environment does not already provide PlantUML through the underlying tooling
+
+### Server
+
+Use a self-hosted PlantUML server when you want centralized rendering and easier setup across a team.
+
+### Kroki
+
+Use Kroki when you prefer a hosted HTTP rendering workflow.
+
+## Security and Runtime Notes
+
+- PDF export renders through Puppeteer in a headless browser.
+- During PDF generation, network requests are blocked except for the self-contained page content used by the export pipeline.
+- PlantUML server mode only accepts `http` and `https` URLs.
+
+## Current Scope
+
+xMarkdown2PDF is intentionally narrower than some established alternatives.
+
+Current strengths:
+- Markdown plus Mermaid plus PlantUML in one workflow
+- focused HTML and PDF export
+- live preview with minimal setup
+- controlled library upgrades
+
+Current limitations:
+- no PNG or JPEG export
+- no PlantUML authoring helpers such as snippets or diagram symbol navigation
+- no Pandoc, slide deck, or code-chunk workflow
+- no batch export or convert-on-save workflow yet
+
+## Roadmap Ideas
+
+- output directory configuration
+- convert on save
+- additional themes
+- better Mermaid render controls in preview
+- stronger PlantUML local-mode setup guidance
+- smaller packaged VSIX footprint
+
+## Development
+
+```bash
+npm install
+npm run build
+npm test -- --runInBand
+```
+
+Package a VSIX:
+
+```bash
+npx @vscode/vsce package --allow-missing-repository
+```
+
+## License
+
+MIT

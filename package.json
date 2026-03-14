@@ -1,0 +1,197 @@
+{
+  "name": "xmarkdown2pdf",
+  "displayName": "xMarkdown2PDF",
+  "description": "Convert Markdown (with Mermaid & PlantUML) to HTML or PDF locally",
+  "version": "0.1.0",
+  "publisher": "xmarkdown2pdf",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hvtai2025/xmarkdown2pdf.git"
+  },
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onLanguage:markdown"
+  ],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "xmarkdown2pdf.openPreview",
+        "title": "Markdown: Open Preview (WYSIWYG)",
+        "category": "xMarkdown2PDF",
+        "icon": "$(open-preview)"
+      },
+      {
+        "command": "xmarkdown2pdf.exportHtml",
+        "title": "Markdown: Export to HTML",
+        "category": "xMarkdown2PDF",
+        "icon": "$(file-code)"
+      },
+      {
+        "command": "xmarkdown2pdf.exportPdf",
+        "title": "Markdown: Export to PDF",
+        "category": "xMarkdown2PDF",
+        "icon": "$(file-pdf)"
+      },
+      {
+        "command": "xmarkdown2pdf.upgradeLibs",
+        "title": "Markdown: Upgrade Libraries",
+        "category": "xMarkdown2PDF",
+        "icon": "$(cloud-download)"
+      }
+    ],
+    "menus": {
+      "editor/title": [
+        {
+          "command": "xmarkdown2pdf.openPreview",
+          "when": "editorLangId == markdown",
+          "group": "navigation"
+        },
+        {
+          "command": "xmarkdown2pdf.exportHtml",
+          "when": "editorLangId == markdown",
+          "group": "1_export"
+        },
+        {
+          "command": "xmarkdown2pdf.exportPdf",
+          "when": "editorLangId == markdown",
+          "group": "1_export"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "xmarkdown2pdf.openPreview",
+          "when": "editorLangId == markdown"
+        },
+        {
+          "command": "xmarkdown2pdf.exportHtml",
+          "when": "editorLangId == markdown"
+        },
+        {
+          "command": "xmarkdown2pdf.exportPdf",
+          "when": "editorLangId == markdown"
+        }
+      ]
+    },
+    "keybindings": [
+      {
+        "command": "xmarkdown2pdf.openPreview",
+        "key": "ctrl+shift+v",
+        "when": "editorLangId == markdown"
+      }
+    ],
+    "configuration": {
+      "title": "xMarkdown2PDF",
+      "properties": {
+        "xmarkdown2pdf.pdf.format": {
+          "type": "string",
+          "default": "A4",
+          "enum": [
+            "A3",
+            "A4",
+            "A5",
+            "Letter",
+            "Legal",
+            "Tabloid"
+          ],
+          "description": "Page format for PDF export"
+        },
+        "xmarkdown2pdf.pdf.margin": {
+          "type": "object",
+          "default": {
+            "top": "20mm",
+            "right": "20mm",
+            "bottom": "20mm",
+            "left": "20mm"
+          },
+          "description": "Page margins for PDF export (CSS units)"
+        },
+        "xmarkdown2pdf.pdf.printBackground": {
+          "type": "boolean",
+          "default": true,
+          "description": "Print background colors and images in PDF"
+        },
+        "xmarkdown2pdf.plantuml.renderMode": {
+          "type": "string",
+          "default": "local",
+          "enum": [
+            "local",
+            "server",
+            "kroki"
+          ],
+          "enumDescriptions": [
+            "Use local Java + plantuml.jar (requires Java runtime)",
+            "Use a self-hosted PlantUML server",
+            "Use the public Kroki.io API (requires internet)"
+          ],
+          "description": "How to render PlantUML diagrams"
+        },
+        "xmarkdown2pdf.plantuml.serverUrl": {
+          "type": "string",
+          "default": "",
+          "description": "PlantUML server URL (used when renderMode is 'server')"
+        },
+        "xmarkdown2pdf.plantuml.jarPath": {
+          "type": "string",
+          "default": "",
+          "description": "Path to plantuml.jar. Leave empty to use the bundled one managed by LibManager."
+        },
+        "xmarkdown2pdf.preview.scrollSync": {
+          "type": "boolean",
+          "default": true,
+          "description": "Synchronize preview scroll position with the editor cursor"
+        },
+        "xmarkdown2pdf.preview.theme": {
+          "type": "string",
+          "default": "github",
+          "enum": [
+            "github",
+            "dark",
+            "custom"
+          ],
+          "description": "Preview and HTML export theme"
+        },
+        "xmarkdown2pdf.preview.customCssPath": {
+          "type": "string",
+          "default": "",
+          "description": "Path to a custom CSS file (used when theme is 'custom')"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "node esbuild.js --production",
+    "build": "node esbuild.js",
+    "watch": "node esbuild.js --watch",
+    "typecheck": "tsc --noEmit",
+    "test": "jest",
+    "test:ci": "jest --runInBand --coverage",
+    "test:coverage": "jest --coverage",
+    "test:watch": "jest --watch",
+    "test:vscode": "node ./out/test/runTest.js",
+    "lint": "eslint src"
+  },
+  "dependencies": {
+    "markdown-it": "^14.1.0",
+    "markdown-it-anchor": "^9.0.1",
+    "markdown-it-table-of-contents": "^0.8.0",
+    "node-plantuml": "^0.9.0",
+    "puppeteer": "^22.0.0"
+  },
+  "devDependencies": {
+    "@types/jest": "^30.0.0",
+    "@types/markdown-it": "^14.1.2",
+    "@types/node": "^20.0.0",
+    "@types/vscode": "^1.85.0",
+    "@vscode/test-electron": "^2.3.9",
+    "esbuild": "^0.20.0",
+    "jest": "^30.3.0",
+    "ts-jest": "^29.4.6",
+    "typescript": "^5.3.0"
+  }
+}

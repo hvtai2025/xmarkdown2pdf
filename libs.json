@@ -1,0 +1,18 @@
+{
+  "mermaid": {
+    "version": "11.13.0",
+    "cdn": "https://cdn.jsdelivr.net/npm/mermaid@{version}/dist/mermaid.min.js",
+    "localPath": "media/libs/mermaid.min.js"
+  },
+  "highlight": {
+    "version": "11.11.1",
+    "packageName": "highlight.js",
+    "cdn": "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/{version}/highlight.min.js",
+    "localPath": "media/libs/highlight.min.js"
+  },
+  "plantuml": {
+    "version": "1.2026.2",
+    "downloadUrl": "https://github.com/plantuml/plantuml/releases/download/v{version}/plantuml-{version}.jar",
+    "localPath": "media/libs/plantuml.jar"
+  }
+}
