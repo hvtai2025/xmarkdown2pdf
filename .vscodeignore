@@ -13,11 +13,19 @@ esbuild.js
 # Build artifacts (source maps)
 dist/**/*.map
 
-# Keep runtime dependencies required by the extension (e.g. Puppeteer).
-# VSCE already excludes devDependencies during packaging.
+# Exclude all node_modules except the packages that are NOT bundled by esbuild.
+# puppeteer and the markdown-it family are bundled into dist/extension.js, so
+# only node-plantuml (and its direct deps) need to ship in the VSIX.
+node_modules/**
+!node_modules/node-plantuml/**
+!node_modules/commander/**
+!node_modules/node-nailgun-client/**
+!node_modules/node-nailgun-server/**
+!node_modules/plantuml-encoder/**
 
-# Ensure bundled local libraries are always included in the VSIX.
-!media/libs/**
+# media/libs JS files must ship; plantuml.jar is 28 MB and is downloaded at
+# runtime by LibManager — do not include it in the VSIX.
+media/libs/plantuml.jar
 
 # Dev / CI
 .github/**
@@ -26,6 +34,7 @@ coverage/**
 .eslintrc*
 
 # Documentation / samples (not needed at runtime)
+ARCHITECTURE.html
 ARCHITECTURE.md
 requirements.md
 requirements.pdf
