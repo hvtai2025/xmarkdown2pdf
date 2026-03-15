@@ -46,6 +46,7 @@ Choose other extensions if you want:
 - Scroll sync from editor selection to preview
 - Export `.md` to `.html`
 - Export `.md` to `.pdf`
+- Add configurable branded PDF headers and footers
 - Render Mermaid diagrams in preview and export
 - Render PlantUML diagrams to inline SVG before export
 - Support PlantUML render modes:
@@ -197,6 +198,49 @@ A larger sample document is included in the extension package as `sample.md`.
 | `xmarkdown2pdf.preview.customCssPath` | Custom CSS path for `custom` theme | empty |
 | `xmarkdown2pdf.preview.mermaidJsPath` | Custom Mermaid JS path | empty |
 | `xmarkdown2pdf.preview.highlightJsPath` | Custom Highlight JS path | empty |
+| `xmarkdown2pdf.brand.enabled` | Enable PDF branding header/footer | `false` |
+| `xmarkdown2pdf.brand.companyName` | Company name used by default brand templates | empty |
+| `xmarkdown2pdf.brand.logoPath` | Absolute path to logo image for default brand header (PNG, JPEG, SVG, GIF, WebP) | empty |
+| `xmarkdown2pdf.brand.primaryColor` | Brand accent color used by default templates | `#1a73e8` |
+| `xmarkdown2pdf.brand.headerTemplate` | Inline custom HTML header template (Puppeteer header/footer HTML constraints apply) | empty |
+| `xmarkdown2pdf.brand.headerTemplatePath` | Absolute path to custom header template HTML file (takes precedence over inline template) | empty |
+| `xmarkdown2pdf.brand.footerTemplate` | Inline custom HTML footer template (Puppeteer header/footer HTML constraints apply) | empty |
+| `xmarkdown2pdf.brand.footerTemplatePath` | Absolute path to custom footer template HTML file (takes precedence over inline template) | empty |
+
+## PDF Branding
+
+Use branding settings when you need company headers and footers in exported PDFs.
+
+Quick start:
+1. Enable branding in settings.
+2. Set company name and optional logo path.
+3. Optionally customize templates using inline HTML or file paths.
+4. Export to PDF.
+
+Example:
+
+```json
+{
+  "xmarkdown2pdf.brand.enabled": true,
+  "xmarkdown2pdf.brand.companyName": "Acme Corporation",
+  "xmarkdown2pdf.brand.logoPath": "/absolute/path/to/logo.png",
+  "xmarkdown2pdf.brand.primaryColor": "#0066cc",
+  "xmarkdown2pdf.brand.headerTemplatePath": "/absolute/path/to/header.html",
+  "xmarkdown2pdf.brand.footerTemplatePath": "/absolute/path/to/footer.html"
+}
+```
+
+Sample templates are included:
+- `media/brand/sample_header.html`
+- `media/brand/sample_footer.html`
+
+Template notes:
+- Header/footer HTML must use inline styles.
+- Puppeteer supports dynamic fields via injected classes:
+  - `<span class="pageNumber"></span>`
+  - `<span class="totalPages"></span>`
+  - `<span class="title"></span>`
+  - `<span class="date"></span>`
 
 ### Use User-Downloaded JS Libraries
 
