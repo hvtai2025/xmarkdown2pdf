@@ -80,7 +80,7 @@ Search for `xMarkdown2PDF` in Extensions.
 ### From a VSIX file
 
 ```bash
-code --install-extension /absolute/path/to/xmarkdown2pdf-0.1.0.vsix
+code --install-extension /absolute/path/to/xmarkdown2pdf-0.1.1.vsix
 ```
 
 ## Library Setup on Your Machine
