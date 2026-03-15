@@ -1,0 +1,41 @@
+<!--
+  sample_header.html — Industrial-style PDF header template.
+
+  PUPPETEER INJECTED CLASSES
+    <span class="title"></span>      document <title> value
+    <span class="date"></span>       formatted print date
+
+  NOTES
+  • All styles are inline to satisfy Puppeteer header/footer constraints.
+  • Keep a generous pdf.margin.top (for example 20mm-25mm).
+-->
+<div style="
+    width: 100%;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
+    font-size: 9px;
+    color: #1d1d1b;
+    padding: 0 16mm 4px 16mm;
+    border-bottom: 2px solid #e20015;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    letter-spacing: 0.15px;
+  ">
+  <div style="display: flex; align-items: center; gap: 7px; min-width: 0;">
+    <span style="font-weight: 700; font-size: 10px; letter-spacing: 0.9px;">TECHNICAL REPORT</span>
+    <span style="color: #5a5a5a; border-left: 1px solid #c7c7c7; padding-left: 6px;">Engineering Data Sheet</span>
+  </div>
+
+  <div style="display: flex; align-items: center; gap: 8px; min-width: 0; max-width: 52%;">
+    <span style="color: #6f6f6f; text-transform: uppercase; font-size: 8px; white-space: nowrap;">Document:</span>
+    <span class="title" style="
+      color: #2f2f2f;
+      font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      min-width: 0;
+    "></span>
+  </div>
+</div>

@@ -3,6 +3,7 @@ import * as path from 'path';
 import * as fs from 'fs/promises';
 import { buildFullHtmlPage } from '../preview/previewTemplate';
 import { Settings } from '../config/Settings';
+import { buildBrandTemplates } from '../brand/BrandTemplate';
 
 /**
  * PdfExporter
@@ -67,11 +68,14 @@ export class PdfExporter {
         })
       ).catch(() => { /* timeout is acceptable — diagrams may still render partially */ });
 
+      const brandTemplates = buildBrandTemplates(settings.brand);
+
       await page.pdf({
         path: outputPath,
         format: settings.pdfFormat as any,
         margin: settings.pdfMargin,
         printBackground: settings.pdfPrintBackground,
+        ...brandTemplates,
       });
     } finally {
       await browser.close();

@@ -204,6 +204,46 @@
           "type": "string",
           "default": "",
           "description": "Path to a custom highlight.min.js file. Leave empty to use the bundled library."
+        },
+        "xmarkdown2pdf.brand.enabled": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable company branding (header & footer) in PDF exports."
+        },
+        "xmarkdown2pdf.brand.companyName": {
+          "type": "string",
+          "default": "",
+          "description": "Company name shown in the PDF header and footer."
+        },
+        "xmarkdown2pdf.brand.logoPath": {
+          "type": "string",
+          "default": "",
+          "description": "Absolute path to a logo image file (PNG, JPEG, SVG, GIF, WebP) to embed in the PDF header."
+        },
+        "xmarkdown2pdf.brand.primaryColor": {
+          "type": "string",
+          "default": "#1a73e8",
+          "description": "Hex color used for the brand accent (border lines, company name). Example: \"#0066cc\"."
+        },
+        "xmarkdown2pdf.brand.headerTemplate": {
+          "type": "string",
+          "default": "",
+          "description": "Custom HTML for the PDF header. Must use inline styles only. Leave empty to use the default brand header. Supports Puppeteer injected classes: pageNumber, totalPages, title, date."
+        },
+        "xmarkdown2pdf.brand.headerTemplatePath": {
+          "type": "string",
+          "default": "",
+          "description": "Absolute path to an .html file used as the PDF header template. Takes precedence over brand.headerTemplate. Use media/brand/sample_header.html as a starting point."
+        },
+        "xmarkdown2pdf.brand.footerTemplate": {
+          "type": "string",
+          "default": "",
+          "description": "Custom HTML for the PDF footer. Must use inline styles only. Leave empty to use the default brand footer. Supports Puppeteer injected classes: pageNumber, totalPages, title, date."
+        },
+        "xmarkdown2pdf.brand.footerTemplatePath": {
+          "type": "string",
+          "default": "",
+          "description": "Absolute path to an .html file used as the PDF footer template. Takes precedence over brand.footerTemplate. Use media/brand/sample_footer.html as a starting point."
         }
       }
     }

@@ -1,0 +1,40 @@
+<!--
+  sample_footer.html — Industrial-style PDF footer template.
+
+  PUPPETEER INJECTED CLASSES
+    <span class="date"></span>        formatted print date
+    <span class="pageNumber"></span>  current page number
+    <span class="totalPages"></span>  total number of pages
+
+  NOTES
+  • All styles are inline to satisfy Puppeteer header/footer constraints.
+  • Keep a generous pdf.margin.bottom (for example 18mm-24mm).
+-->
+<div style="
+    width: 100%;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
+    font-size: 8.5px;
+    color: #3c3c3c;
+    padding: 4px 16mm 0 16mm;
+    border-top: 1px solid #bdbdbd;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    letter-spacing: 0.12px;
+  ">
+  <span style="white-space: nowrap; color: #5f5f5f; text-transform: uppercase;">Confidential Internal Document</span>
+
+  <span class="date" style="color: #6a6a6a; white-space: nowrap;"></span>
+
+  <span style="
+    color: #1d1d1b;
+    font-weight: 600;
+    white-space: nowrap;
+    border-left: 2px solid #e20015;
+    padding-left: 7px;
+  ">
+    Page <span class="pageNumber"></span> / <span class="totalPages"></span>
+  </span>
+</div>

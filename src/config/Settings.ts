@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs';
+import { BrandSettings } from '../brand/BrandTemplate';
 
 interface PdfMargin {
   top: string;
@@ -23,6 +24,7 @@ interface ExtensionSettings {
   previewCustomCssPath: string;
   previewMermaidJsPath: string;
   previewHighlightJsPath: string;
+  brand: BrandSettings;
 }
 
 const SECTION = 'xmarkdown2pdf';
@@ -58,6 +60,16 @@ export class Settings {
       previewCustomCssPath: cfg.get<string>('preview.customCssPath', ''),
       previewMermaidJsPath: Settings.resolveOptionalFilePath(cfg.get<string>('preview.mermaidJsPath', '')),
       previewHighlightJsPath: Settings.resolveOptionalFilePath(cfg.get<string>('preview.highlightJsPath', '')),
+      brand: {
+        enabled: cfg.get<boolean>('brand.enabled', false),
+        companyName: cfg.get<string>('brand.companyName', ''),
+        logoPath: Settings.resolveOptionalFilePath(cfg.get<string>('brand.logoPath', '')),
+        primaryColor: cfg.get<string>('brand.primaryColor', '#1a73e8'),
+        headerTemplate: cfg.get<string>('brand.headerTemplate', ''),
+        footerTemplate: cfg.get<string>('brand.footerTemplate', ''),
+        headerTemplatePath: Settings.resolveOptionalFilePath(cfg.get<string>('brand.headerTemplatePath', '')),
+        footerTemplatePath: Settings.resolveOptionalFilePath(cfg.get<string>('brand.footerTemplatePath', '')),
+      },
     };
   }
 
