@@ -37,13 +37,14 @@ describe('PdfExporter (Phase 3)', () => {
   });
 
   test('launches puppeteer and writes a PDF', async () => {
-    await PdfExporter.export('<h1>Hi</h1>', '/tmp/test.pdf', context);
+    await PdfExporter.export('<nav class="table-of-contents"><a href="#hi">Hi</a></nav><h1 id="hi">Hi</h1>', '/tmp/test.pdf', context);
 
     expect(launch).toHaveBeenCalledTimes(1);
     expect(newPage).toHaveBeenCalledTimes(1);
     expect(setRequestInterception).toHaveBeenCalledWith(true);
     expect(requestOn).toHaveBeenCalledWith('request', expect.any(Function));
     expect(setContent).toHaveBeenCalledWith(expect.stringContaining('<!DOCTYPE html>'), { waitUntil: 'domcontentloaded' });
+    expect(setContent).toHaveBeenCalledWith(expect.stringContaining('table-of-contents'), { waitUntil: 'domcontentloaded' });
     expect(pdf).toHaveBeenCalledWith(expect.objectContaining({
       path: '/tmp/test.pdf',
       printBackground: true,

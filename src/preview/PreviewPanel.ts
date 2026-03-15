@@ -86,7 +86,12 @@ export class PreviewPanel {
   }
 
   private async render(context: vscode.ExtensionContext): Promise<void> {
-    const fragment = await this.pipeline.render(this.document.getText());
+    const settings = Settings.get();
+    const fragment = await this.pipeline.render(this.document.getText(), {
+      includeToc: settings.previewIncludeToc,
+      tocTitle: settings.exportTocTitle,
+      tocMaxDepth: settings.exportTocMaxDepth,
+    });
     // First render must set the complete HTML shell with scripts/styles.
     if (!this.initialized) {
       const html = buildFullHtmlPage(

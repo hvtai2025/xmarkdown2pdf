@@ -11,6 +11,10 @@ interface PdfMargin {
 }
 
 interface ExtensionSettings {
+  exportIncludeToc: boolean;
+  exportTocTitle: string;
+  exportTocMaxDepth: number;
+  previewIncludeToc: boolean;
   pdfFormat: string;
   pdfMargin: PdfMargin;
   pdfPrintBackground: boolean;
@@ -45,6 +49,10 @@ export class Settings {
     const serverUrl = Settings.validateServerUrl(rawServerUrl);
 
     return {
+      exportIncludeToc: cfg.get<boolean>('export.includeToc', true),
+      exportTocTitle: cfg.get<string>('export.tocTitle', 'Table of Contents').trim() || 'Table of Contents',
+      exportTocMaxDepth: Settings.resolveHeadingDepth(cfg.get<number>('export.tocMaxDepth', 3)),
+      previewIncludeToc: cfg.get<boolean>('preview.includeToc', false),
       pdfFormat: cfg.get<string>('pdf.format', 'A4'),
       pdfMargin: cfg.get<PdfMargin>('pdf.margin', {
         top: '20mm', right: '20mm', bottom: '20mm', left: '20mm',
@@ -107,5 +115,12 @@ export class Settings {
     }
     const cleaned = value.filter(item => typeof item === 'string' && item.trim().length > 0);
     return cleaned.length > 0 ? cleaned : [...DEFAULT_PDF_LAUNCH_ARGS];
+  }
+
+  private static resolveHeadingDepth(value: unknown): number {
+    if (typeof value !== 'number' || !Number.isInteger(value)) {
+      return 3;
+    }
+    return Math.min(6, Math.max(1, value));
   }
 }

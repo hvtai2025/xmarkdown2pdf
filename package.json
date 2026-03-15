@@ -26,7 +26,10 @@
     "html",
     "plantuml",
     "uml",
-    "planttext"
+    "planttext",
+    "table of contents",
+    "toc",
+    "preview"
   ],
   "activationEvents": [
     "onLanguage:markdown"
@@ -119,6 +122,23 @@
     "configuration": {
       "title": "xMarkdown2PDF",
       "properties": {
+        "xmarkdown2pdf.export.includeToc": {
+          "type": "boolean",
+          "default": true,
+          "description": "Include a generated table of contents in exported HTML and PDF documents."
+        },
+        "xmarkdown2pdf.export.tocTitle": {
+          "type": "string",
+          "default": "Table of Contents",
+          "description": "Heading text shown above the generated export table of contents."
+        },
+        "xmarkdown2pdf.export.tocMaxDepth": {
+          "type": "integer",
+          "default": 3,
+          "minimum": 1,
+          "maximum": 6,
+          "description": "Deepest heading level included in the generated export table of contents."
+        },
         "xmarkdown2pdf.pdf.format": {
           "type": "string",
           "default": "A4",
@@ -193,6 +213,11 @@
           "type": "boolean",
           "default": true,
           "description": "Synchronize preview scroll position with the editor cursor"
+        },
+        "xmarkdown2pdf.preview.includeToc": {
+          "type": "boolean",
+          "default": false,
+          "description": "Include the generated table of contents in the live preview panel."
         },
         "xmarkdown2pdf.preview.theme": {
           "type": "string",

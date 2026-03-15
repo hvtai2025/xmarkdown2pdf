@@ -60,7 +60,17 @@ describe('HtmlExporter.export()', () => {
     await HtmlExporter.export('# My Title', outPath, makeContext());
 
     const content = await fs.readFile(outPath, 'utf-8');
-    expect(content).toContain('<h1>My Title</h1>');
+    expect(content).toContain('<h1 id="my-title">My Title</h1>');
+  });
+
+  test('includes a generated table of contents by default', async () => {
+    const outPath = path.join(tmpDir, 'toc.html');
+    await HtmlExporter.export('# Overview\n\n## Scope', outPath, makeContext());
+
+    const content = await fs.readFile(outPath, 'utf-8');
+    expect(content).toContain('<nav class="table-of-contents"');
+    expect(content).toContain('<a href="#overview">Overview</a>');
+    expect(content).toContain('<a href="#scope">Scope</a>');
   });
 
   test('includes rendered paragraph text', async () => {
@@ -149,7 +159,7 @@ describe('HtmlExporter.export()', () => {
     await HtmlExporter.export('# Injected', outPath, makeContext(), customPipeline);
 
     const content = await fs.readFile(outPath, 'utf-8');
-    expect(content).toContain('<h1>Injected</h1>');
+    expect(content).toContain('<h1 id="injected">Injected</h1>');
   });
 
   // ── rich document ─────────────────────────────────────────────
@@ -185,12 +195,13 @@ describe('HtmlExporter.export()', () => {
     await HtmlExporter.export(md, outPath, makeContext());
     const content = await fs.readFile(outPath, 'utf-8');
 
-    expect(content).toContain('<h1>Report</h1>');
-    expect(content).toContain('<h2>Summary</h2>');
+    expect(content).toContain('<h1 id="report">Report</h1>');
+    expect(content).toContain('<h2 id="summary">Summary</h2>');
     expect(content).toContain('<strong>three</strong>');
     expect(content).toContain('<li>Alpha</li>');
     expect(content).toContain('<div class="mermaid">');
     expect(content).toContain('graph TD');
     expect(content).toContain('const x: number = 42;');
+    expect(content).toContain('<a href="#summary">Summary</a>');
   });
 });

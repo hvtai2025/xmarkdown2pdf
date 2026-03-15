@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import * as fs from 'fs/promises';
 import { MarkdownPipeline } from '../renderer/MarkdownPipeline';
 import { buildFullHtmlPage } from '../preview/previewTemplate';
+import { Settings } from '../config/Settings';
 
 /**
  * HtmlExporter
@@ -25,7 +26,12 @@ export class HtmlExporter {
     context: vscode.ExtensionContext,
     pipeline: MarkdownPipeline = new MarkdownPipeline()
   ): Promise<void> {
-    const fragment = await pipeline.render(markdown);
+    const settings = Settings.get();
+    const fragment = await pipeline.render(markdown, {
+      includeToc: settings.exportIncludeToc,
+      tocTitle: settings.exportTocTitle,
+      tocMaxDepth: settings.exportTocMaxDepth,
+    });
     const html = buildFullHtmlPage(
       { fragment, embedScripts: true, forExport: true },
       context

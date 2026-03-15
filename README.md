@@ -44,8 +44,10 @@ Choose other extensions if you want:
 - Preview Markdown in a side-by-side webview panel
 - Auto-refresh preview while you edit
 - Scroll sync from editor selection to preview
+- Optionally show a generated table of contents in the preview
 - Export `.md` to `.html`
 - Export `.md` to `.pdf`
+- Generate a linked table of contents for exported HTML and PDF
 - Add configurable branded PDF headers and footers
 - Render Mermaid diagrams in preview and export
 - Render PlantUML diagrams to inline SVG before export
@@ -152,6 +154,7 @@ Use your own custom jar path:
 4. Run `Markdown: Export to HTML` or `Markdown: Export to PDF`.
 
 Exported files are written next to the source Markdown file using the same base name.
+By default, exports include a linked table of contents generated from document headings.
 
 ## Example
 
@@ -193,11 +196,15 @@ A larger sample document is included in the extension package as `sample.md`.
 | `xmarkdown2pdf.plantuml.renderMode` | PlantUML render backend | `local` |
 | `xmarkdown2pdf.plantuml.serverUrl` | PlantUML server URL when using server mode | empty |
 | `xmarkdown2pdf.plantuml.jarPath` | Path to `plantuml.jar` for local mode | empty |
+| `xmarkdown2pdf.preview.includeToc` | Include the generated table of contents in the live preview panel | `false` |
 | `xmarkdown2pdf.preview.scrollSync` | Sync editor selection to preview | `true` |
 | `xmarkdown2pdf.preview.theme` | Preview/export theme | `github` |
 | `xmarkdown2pdf.preview.customCssPath` | Custom CSS path for `custom` theme | empty |
 | `xmarkdown2pdf.preview.mermaidJsPath` | Custom Mermaid JS path | empty |
 | `xmarkdown2pdf.preview.highlightJsPath` | Custom Highlight JS path | empty |
+| `xmarkdown2pdf.export.includeToc` | Include a generated table of contents in exported HTML and PDF | `true` |
+| `xmarkdown2pdf.export.tocTitle` | Title shown above the generated table of contents | `Table of Contents` |
+| `xmarkdown2pdf.export.tocMaxDepth` | Deepest heading level included in the generated table of contents | `3` |
 | `xmarkdown2pdf.brand.enabled` | Enable PDF branding header/footer | `false` |
 | `xmarkdown2pdf.brand.companyName` | Company name used by default brand templates | empty |
 | `xmarkdown2pdf.brand.logoPath` | Absolute path to logo image for default brand header (PNG, JPEG, SVG, GIF, WebP) | empty |

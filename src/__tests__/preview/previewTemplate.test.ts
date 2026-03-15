@@ -48,6 +48,20 @@ describe('buildFullHtmlPage (embed mode — for HTML export)', () => {
     expect(html).toContain('<p>World</p>');
   });
 
+  test('preserves table of contents markup in the content wrapper', () => {
+    const html = buildFullHtmlPage(
+      {
+        fragment: '<nav class="table-of-contents"><a href="#hello">Hello</a></nav><h1 id="hello">Hello</h1>',
+        embedScripts: true,
+        forExport: true,
+      },
+      context
+    );
+
+    expect(html).toContain('<nav class="table-of-contents">');
+    expect(html).toContain('<a href="#hello">Hello</a>');
+  });
+
   // ── security (Content-Security-Policy) ────────────────────────
 
   test('contains a Content-Security-Policy meta tag', () => {

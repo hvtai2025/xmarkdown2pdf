@@ -128,6 +128,43 @@ body.theme-dark tr:nth-child(even) { background: #2d2d2d; }
 /* ── Images ───────────────────────────────────────────────────── */
 img { max-width: 100%; height: auto; }
 
+/* ── Table of contents ───────────────────────────────────────── */
+.table-of-contents {
+  border: 1px solid #d0d7de;
+  border-radius: 8px;
+  padding: 16px 20px;
+  margin: 0 0 32px;
+  break-inside: avoid;
+}
+
+.table-of-contents__title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0 0 12px;
+}
+
+.table-of-contents ol {
+  margin: 0;
+  padding-left: 1.4em;
+}
+
+.table-of-contents li + li {
+  margin-top: 0.25em;
+}
+
+.table-of-contents a {
+  text-decoration: none;
+}
+
+.table-of-contents a:hover {
+  text-decoration: underline;
+}
+
+body.theme-dark .table-of-contents {
+  border-color: #555;
+  background: #252526;
+}
+
 /* ── Print / PDF overrides ────────────────────────────────────── */
 @media print {
   body { padding: 0; }

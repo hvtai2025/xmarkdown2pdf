@@ -8,6 +8,9 @@ import * as path from 'path';
 
 // ── workspace ──────────────────────────────────────────────────
 const defaultConfig: Record<string, unknown> = {
+  'export.includeToc': true,
+  'export.tocTitle': 'Table of Contents',
+  'export.tocMaxDepth': 3,
   'pdf.format': 'A4',
   'pdf.margin': { top: '20mm', right: '20mm', bottom: '20mm', left: '20mm' },
   'pdf.printBackground': true,
@@ -16,6 +19,7 @@ const defaultConfig: Record<string, unknown> = {
   'plantuml.renderMode': 'local',
   'plantuml.serverUrl': '',
   'plantuml.jarPath': '',
+  'preview.includeToc': false,
   'preview.scrollSync': true,
   'preview.theme': 'github',
   'preview.customCssPath': '',

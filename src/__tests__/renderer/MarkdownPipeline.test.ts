@@ -15,19 +15,50 @@ describe('MarkdownPipeline', () => {
 
   test('renders h1', async () => {
     const html = await pipeline.render('# Heading 1');
-    expect(html).toContain('<h1>Heading 1</h1>');
+    expect(html).toContain('<h1 id="heading-1">Heading 1</h1>');
   });
 
   test('renders h2', async () => {
     const html = await pipeline.render('## Heading 2');
-    expect(html).toContain('<h2>Heading 2</h2>');
+    expect(html).toContain('<h2 id="heading-2">Heading 2</h2>');
   });
 
   test('renders h3 through h6', async () => {
     for (let level = 3; level <= 6; level++) {
       const html = await pipeline.render(`${'#'.repeat(level)} H${level}`);
-      expect(html).toContain(`<h${level}>`);
+      expect(html).toContain(`<h${level} id="h${level}">`);
     }
+  });
+
+  test('adds unique heading ids for repeated titles', async () => {
+    const html = await pipeline.render('# Repeat\n\n## Repeat');
+    expect(html).toContain('<h1 id="repeat">Repeat</h1>');
+    expect(html).toContain('<h2 id="repeat-1">Repeat</h2>');
+  });
+
+  test('prepends a generated table of contents when requested', async () => {
+    const html = await pipeline.render('# Intro\n\n## Details', {
+      includeToc: true,
+      tocTitle: 'Contents',
+      tocMaxDepth: 2,
+    });
+
+    expect(html).toContain('<nav class="table-of-contents"');
+    expect(html).toContain('<p class="table-of-contents__title">Contents</p>');
+    expect(html).toContain('<a href="#intro">Intro</a>');
+    expect(html).toContain('<a href="#details">Details</a>');
+    expect(html.indexOf('<nav class="table-of-contents"')).toBeLessThan(html.indexOf('<h1 id="intro">Intro</h1>'));
+  });
+
+  test('limits generated table of contents to the configured heading depth', async () => {
+    const html = await pipeline.render('# Intro\n\n## Details\n\n### Deep Dive', {
+      includeToc: true,
+      tocMaxDepth: 2,
+    });
+
+    expect(html).toContain('<a href="#intro">Intro</a>');
+    expect(html).toContain('<a href="#details">Details</a>');
+    expect(html).not.toContain('<a href="#deep-dive">Deep Dive</a>');
   });
 
   // ── paragraphs & inline ───────────────────────────────────────
@@ -130,7 +161,7 @@ describe('MarkdownPipeline', () => {
     const html = await pipeline.render(md);
     const count = (html.match(/<div class="mermaid">/g) ?? []).length;
     expect(count).toBe(2);
-    expect(html).toContain('<h1>Doc</h1>');
+    expect(html).toContain('<h1 id="doc">Doc</h1>');
     expect(html).toContain('Some text');
   });
 
@@ -174,8 +205,8 @@ describe('MarkdownPipeline', () => {
   test('handles a large document without error', async () => {
     const lines = Array.from({ length: 500 }, (_, i) => `## Section ${i}\n\nParagraph ${i}\n`);
     const html = await pipeline.render(lines.join('\n'));
-    expect(html).toContain('<h2>Section 0</h2>');
-    expect(html).toContain('<h2>Section 499</h2>');
+    expect(html).toContain('<h2 id="section-0">Section 0</h2>');
+    expect(html).toContain('<h2 id="section-499">Section 499</h2>');
   });
 
   // ── plugin extensibility ──────────────────────────────────────

@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import { MarkdownPipeline } from '../renderer/MarkdownPipeline';
 import { PdfExporter } from '../exporter/PdfExporter';
+import { Settings } from '../config/Settings';
 
 const pipeline = new MarkdownPipeline();
 
@@ -26,7 +27,12 @@ export function registerExportPdf(context: vscode.ExtensionContext): void {
       await vscode.window.withProgress(
         { location: vscode.ProgressLocation.Notification, title: 'Exporting PDF…', cancellable: false },
         async () => {
-          const fragment = await pipeline.render(document.getText());
+          const settings = Settings.get();
+          const fragment = await pipeline.render(document.getText(), {
+            includeToc: settings.exportIncludeToc,
+            tocTitle: settings.exportTocTitle,
+            tocMaxDepth: settings.exportTocMaxDepth,
+          });
           await PdfExporter.export(fragment, outPath, context);
         }
       );
