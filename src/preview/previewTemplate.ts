@@ -23,23 +23,29 @@ export function buildFullHtmlPage(
 ): string {
   const settings = Settings.get();
   const mediaDir = path.join(context.extensionPath, 'media');
+  const defaultMermaidPath = path.join(mediaDir, 'libs', 'mermaid.min.js');
+  const defaultHighlightPath = path.join(mediaDir, 'libs', 'highlight.min.js');
+  const mermaidFsPath = settings.previewMermaidJsPath || defaultMermaidPath;
+  const highlightFsPath = settings.previewHighlightJsPath || defaultHighlightPath;
 
   // For export: read raw file content to inline directly into <script> tags.
   // For webview: resolve to a vscode-resource URI used as <script src="...">
   const mermaidScript = resolveScript(
-    path.join(mediaDir, 'libs', 'mermaid.min.js'),
+    mermaidFsPath,
     'mermaid.min.js',
     options.embedScripts,
     webview,
-    context
+    context,
+    defaultMermaidPath
   );
 
   const highlightScript = resolveScript(
-    path.join(mediaDir, 'libs', 'highlight.min.js'),
+    highlightFsPath,
     'highlight.min.js',
     options.embedScripts,
     webview,
-    context
+    context,
+    defaultHighlightPath
   );
 
   const css = resolveStyleSrc(
@@ -112,17 +118,26 @@ function resolveScript(
   filename: string,
   embed: boolean,
   webview: vscode.Webview | undefined,
-  context: vscode.ExtensionContext
+  context: vscode.ExtensionContext,
+  defaultFsPath: string
 ): ScriptRef {
+  const usePath = fs.existsSync(fsPath) ? fsPath : defaultFsPath;
+
   if (embed) {
-    const content = fs.existsSync(fsPath)
-      ? fs.readFileSync(fsPath, 'utf-8')
+    const content = fs.existsSync(usePath)
+      ? fs.readFileSync(usePath, 'utf-8')
       : `console.warn('${filename} not found');`;
     return { kind: 'inline', content };
   }
-  const url = webview!.asWebviewUri(
-    vscode.Uri.joinPath(context.extensionUri, 'media', 'libs', filename)
-  ).toString();
+
+  let scriptUri: vscode.Uri;
+  if (path.resolve(usePath) === path.resolve(defaultFsPath)) {
+    scriptUri = vscode.Uri.joinPath(context.extensionUri, 'media', 'libs', filename);
+  } else {
+    scriptUri = vscode.Uri.file(usePath);
+  }
+
+  const url = webview!.asWebviewUri(scriptUri).toString();
   return { kind: 'src', url };
 }
 

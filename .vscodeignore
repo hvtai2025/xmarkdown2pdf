@@ -13,8 +13,11 @@ esbuild.js
 # Build artifacts (source maps)
 dist/**/*.map
 
-# Node modules (all deps bundled by esbuild)
-node_modules/**
+# Keep runtime dependencies required by the extension (e.g. Puppeteer).
+# VSCE already excludes devDependencies during packaging.
+
+# Ensure bundled local libraries are always included in the VSIX.
+!media/libs/**
 
 # Dev / CI
 .github/**

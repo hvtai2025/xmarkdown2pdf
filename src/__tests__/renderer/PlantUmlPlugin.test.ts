@@ -46,6 +46,20 @@ describe('PlantUmlPlugin', () => {
     expect(output).toContain(PLACEHOLDER_SUFFIX);
   });
 
+  test('emits a placeholder for puml and uml aliases', () => {
+    const puml = md.render('```puml\n@startuml\nAlice -> Bob\n@enduml\n```');
+    const uml = md.render('```uml\n@startuml\nAlice -> Bob\n@enduml\n```');
+
+    expect(puml).toContain(PLACEHOLDER_PREFIX);
+    expect(uml).toContain(PLACEHOLDER_PREFIX);
+  });
+
+  test('emits a placeholder when fence info has extra options', () => {
+    const input = '```plantuml title="Sample"\n@startuml\nAlice -> Bob\n@enduml\n```';
+    const output = md.render(input);
+    expect(output).toContain(PLACEHOLDER_PREFIX);
+  });
+
   test('placeholder contains the base64-encoded source', () => {
     const source = '@startuml\nAlice -> Bob\n@enduml\n';
     const input = `\`\`\`plantuml\n${source}\`\`\``;

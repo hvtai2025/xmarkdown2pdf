@@ -10,7 +10,8 @@ const buildOptions = {
   outfile: 'dist/extension.js',
   external: [
     'vscode',
-    'puppeteer',     // keep external so Puppeteer can locate its bundled Chromium
+    'puppeteer',      // keep external so Puppeteer can locate its bundled Chromium
+    'node-plantuml',  // keep external so node-plantuml can locate its plantuml.jar via __dirname
   ],
   format: 'cjs',
   platform: 'node',

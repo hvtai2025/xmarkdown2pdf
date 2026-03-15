@@ -11,12 +11,16 @@ const defaultConfig: Record<string, unknown> = {
   'pdf.format': 'A4',
   'pdf.margin': { top: '20mm', right: '20mm', bottom: '20mm', left: '20mm' },
   'pdf.printBackground': true,
+  'pdf.browserExecutablePath': '',
+  'pdf.launchArgs': ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
   'plantuml.renderMode': 'local',
   'plantuml.serverUrl': '',
   'plantuml.jarPath': '',
   'preview.scrollSync': true,
   'preview.theme': 'github',
   'preview.customCssPath': '',
+  'preview.mermaidJsPath': '',
+  'preview.highlightJsPath': '',
 };
 
 export const workspace = {

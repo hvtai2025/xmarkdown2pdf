@@ -23,7 +23,7 @@ export class PlantUmlPlugin implements RendererPlugin {
 
     md.renderer.rules.fence = (tokens, idx, options, env, self) => {
       const token = tokens[idx];
-      if (token.info.trim() === 'plantuml') {
+      if (isPlantUmlFence(token.info)) {
         const encoded = Buffer.from(token.content).toString('base64');
         return `${PLACEHOLDER_PREFIX}${encoded}${PLACEHOLDER_SUFFIX}\n`;
       }
@@ -103,21 +103,62 @@ export class PlantUmlPlugin implements RendererPlugin {
       const deflated = zlib.deflateRawSync(Buffer.from(source));
       const encoded = deflated.toString('base64').replace(/\+/g, '-').replace(/\//g, '_');
       url = `https://kroki.io/plantuml/svg/${encoded}`;
+      return new Promise<string>((resolve, reject) => {
+        const client = url.startsWith('https') ? https : http;
+        (client as typeof https).get(url, res => {
+          const status = res.statusCode ?? 0;
+          if (status < 200 || status >= 300) {
+            reject(new Error(`Kroki request failed with HTTP ${status}`));
+            return;
+          }
+          const chunks: Buffer[] = [];
+          res.on('data', (c: Buffer) => chunks.push(c));
+          res.on('end', () => resolve(Buffer.concat(chunks).toString('utf-8')));
+          res.on('error', reject);
+        }).on('error', reject);
+      });
     } else {
-      const encoded = encodeURIComponent(source);
-      url = `${serverUrl.replace(/\/$/, '')}/svg/${encoded}`;
-    }
+      url = `${serverUrl.replace(/\/$/, '')}/svg`;
 
-    return new Promise<string>((resolve, reject) => {
-      const client = url.startsWith('https') ? https : http;
-      (client as typeof https).get(url, res => {
-        const chunks: Buffer[] = [];
-        res.on('data', (c: Buffer) => chunks.push(c));
-        res.on('end', () => resolve(Buffer.concat(chunks).toString('utf-8')));
-        res.on('error', reject);
-      }).on('error', reject);
-    });
+      return new Promise<string>((resolve, reject) => {
+        const parsed = new URL(url);
+        const data = Buffer.from(source, 'utf-8');
+        const transport = parsed.protocol === 'https:' ? https : http;
+        const req = transport.request(
+          {
+            protocol: parsed.protocol,
+            hostname: parsed.hostname,
+            port: parsed.port || undefined,
+            path: parsed.pathname + parsed.search,
+            method: 'POST',
+            headers: {
+              'Content-Type': 'text/plain; charset=utf-8',
+              'Content-Length': data.length,
+            },
+          },
+          res => {
+            const status = res.statusCode ?? 0;
+            if (status < 200 || status >= 300) {
+              reject(new Error(`PlantUML server request failed with HTTP ${status}`));
+              return;
+            }
+            const chunks: Buffer[] = [];
+            res.on('data', (c: Buffer) => chunks.push(c));
+            res.on('end', () => resolve(Buffer.concat(chunks).toString('utf-8')));
+            res.on('error', reject);
+          }
+        );
+        req.on('error', reject);
+        req.write(data);
+        req.end();
+      });
+    }
   }
+}
+
+function isPlantUmlFence(info: string): boolean {
+  const lang = info.trim().split(/\s+/, 1)[0].toLowerCase();
+  return lang === 'plantuml' || lang === 'puml' || lang === 'uml';
 }
 
 function escapeRegex(s: string): string {

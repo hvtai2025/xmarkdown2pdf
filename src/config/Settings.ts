@@ -13,15 +13,24 @@ interface ExtensionSettings {
   pdfFormat: string;
   pdfMargin: PdfMargin;
   pdfPrintBackground: boolean;
+  pdfBrowserExecutablePath: string;
+  pdfLaunchArgs: string[];
   plantumlRenderMode: 'local' | 'server' | 'kroki';
   plantumlServerUrl: string;
   plantumlJarPath: string;
   previewScrollSync: boolean;
   previewTheme: 'github' | 'dark' | 'custom';
   previewCustomCssPath: string;
+  previewMermaidJsPath: string;
+  previewHighlightJsPath: string;
 }
 
 const SECTION = 'xmarkdown2pdf';
+const DEFAULT_PDF_LAUNCH_ARGS = [
+  '--no-sandbox',
+  '--disable-setuid-sandbox',
+  '--disable-dev-shm-usage',
+];
 
 // Allowed hosts for PlantUML server — validated to prevent SSRF
 const ALLOWED_PLANTUML_PROTOCOLS = ['http:', 'https:'];
@@ -39,12 +48,16 @@ export class Settings {
         top: '20mm', right: '20mm', bottom: '20mm', left: '20mm',
       }),
       pdfPrintBackground: cfg.get<boolean>('pdf.printBackground', true),
+      pdfBrowserExecutablePath: Settings.resolveOptionalFilePath(cfg.get<string>('pdf.browserExecutablePath', '')),
+      pdfLaunchArgs: Settings.resolveStringArray(cfg.get<string[]>('pdf.launchArgs', DEFAULT_PDF_LAUNCH_ARGS)),
       plantumlRenderMode: cfg.get<'local' | 'server' | 'kroki'>('plantuml.renderMode', 'local'),
       plantumlServerUrl: serverUrl,
       plantumlJarPath: Settings.resolveJarPath(cfg.get<string>('plantuml.jarPath', '')),
       previewScrollSync: cfg.get<boolean>('preview.scrollSync', true),
       previewTheme: cfg.get<'github' | 'dark' | 'custom'>('preview.theme', 'github'),
       previewCustomCssPath: cfg.get<string>('preview.customCssPath', ''),
+      previewMermaidJsPath: Settings.resolveOptionalFilePath(cfg.get<string>('preview.mermaidJsPath', '')),
+      previewHighlightJsPath: Settings.resolveOptionalFilePath(cfg.get<string>('preview.highlightJsPath', '')),
     };
   }
 
@@ -67,5 +80,20 @@ export class Settings {
     }
     // Falls back to the version managed by LibManager inside the extension
     return '';
+  }
+
+  private static resolveOptionalFilePath(configuredPath: string): string {
+    if (configuredPath && fs.existsSync(configuredPath)) {
+      return path.resolve(configuredPath);
+    }
+    return '';
+  }
+
+  private static resolveStringArray(value: unknown): string[] {
+    if (!Array.isArray(value)) {
+      return [...DEFAULT_PDF_LAUNCH_ARGS];
+    }
+    const cleaned = value.filter(item => typeof item === 'string' && item.trim().length > 0);
+    return cleaned.length > 0 ? cleaned : [...DEFAULT_PDF_LAUNCH_ARGS];
   }
 }

@@ -30,7 +30,7 @@ export class PreviewPanel {
       vscode.ViewColumn.Beside,
       {
         enableScripts: true,
-        localResourceRoots: [vscode.Uri.joinPath(context.extensionUri, 'media')],
+        localResourceRoots: PreviewPanel.getLocalResourceRoots(context),
         retainContextWhenHidden: true,
       }
     );
@@ -110,5 +110,21 @@ export class PreviewPanel {
     }
     for (const d of this.disposables) d.dispose();
     this.disposables = [];
+  }
+
+  private static getLocalResourceRoots(context: vscode.ExtensionContext): vscode.Uri[] {
+    const settings = Settings.get();
+    const roots = [vscode.Uri.joinPath(context.extensionUri, 'media')];
+    const customPaths = [
+      settings.previewCustomCssPath,
+      settings.previewMermaidJsPath,
+      settings.previewHighlightJsPath,
+    ].filter((value): value is string => value.length > 0);
+
+    for (const customPath of customPaths) {
+      roots.push(vscode.Uri.file(path.dirname(customPath)));
+    }
+
+    return Array.from(new Map(roots.map(root => [root.fsPath, root])).values());
   }
 }

@@ -28,14 +28,14 @@ export class PdfExporter {
 
     // Dynamic import so Puppeteer is not bundled by esbuild (listed as external)
     const puppeteer = await import('puppeteer');
-    const browser = await puppeteer.launch({
+    const launchOptions: any = {
       headless: true,
-      args: [
-        '--no-sandbox',         // required in some Linux environments
-        '--disable-setuid-sandbox',
-        '--disable-dev-shm-usage',
-      ],
-    });
+      args: settings.pdfLaunchArgs,
+    };
+    if (settings.pdfBrowserExecutablePath) {
+      launchOptions.executablePath = settings.pdfBrowserExecutablePath;
+    }
+    const browser = await puppeteer.launch(launchOptions);
 
     try {
       const page = await browser.newPage();

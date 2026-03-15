@@ -133,6 +133,23 @@
           "default": true,
           "description": "Print background colors and images in PDF"
         },
+        "xmarkdown2pdf.pdf.browserExecutablePath": {
+          "type": "string",
+          "default": "",
+          "description": "Path to a local Chromium/Chrome executable for PDF export. Leave empty to use Puppeteer's managed browser."
+        },
+        "xmarkdown2pdf.pdf.launchArgs": {
+          "type": "array",
+          "default": [
+            "--no-sandbox",
+            "--disable-setuid-sandbox",
+            "--disable-dev-shm-usage"
+          ],
+          "items": {
+            "type": "string"
+          },
+          "description": "Launch arguments passed to the browser process used for PDF export."
+        },
         "xmarkdown2pdf.plantuml.renderMode": {
           "type": "string",
           "default": "local",
@@ -177,6 +194,16 @@
           "type": "string",
           "default": "",
           "description": "Path to a custom CSS file (used when theme is 'custom')"
+        },
+        "xmarkdown2pdf.preview.mermaidJsPath": {
+          "type": "string",
+          "default": "",
+          "description": "Path to a custom mermaid.min.js file. Leave empty to use the bundled library."
+        },
+        "xmarkdown2pdf.preview.highlightJsPath": {
+          "type": "string",
+          "default": "",
+          "description": "Path to a custom highlight.min.js file. Leave empty to use the bundled library."
         }
       }
     }

@@ -82,6 +82,67 @@ Search for `xMarkdown2PDF` in Extensions.
 code --install-extension /absolute/path/to/xmarkdown2pdf-0.1.0.vsix
 ```
 
+## Library Setup on Your Machine
+
+After installing the extension, run this once so diagram libraries are present and up to date:
+
+1. Open Command Palette.
+2. Run `Markdown: Upgrade Libraries`.
+3. Wait for the success notification.
+4. If needed, open output channel `xMarkdown2PDF — Upgrade` to see details.
+
+This command downloads and stores managed runtime files under `media/libs/`:
+- `mermaid.min.js`
+- `highlight.min.js`
+- `plantuml.jar`
+
+### Configure PlantUML Linking in Settings
+
+Open your VS Code `settings.json` and choose one mode.
+
+#### Local mode (recommended)
+
+Use the bundled `plantuml.jar` managed by the extension:
+
+```json
+{
+  "xmarkdown2pdf.plantuml.renderMode": "local",
+  "xmarkdown2pdf.plantuml.jarPath": ""
+}
+```
+
+Use your own custom jar path:
+
+```json
+{
+  "xmarkdown2pdf.plantuml.renderMode": "local",
+  "xmarkdown2pdf.plantuml.jarPath": "/absolute/path/to/plantuml.jar"
+}
+```
+
+#### Server mode
+
+```json
+{
+  "xmarkdown2pdf.plantuml.renderMode": "server",
+  "xmarkdown2pdf.plantuml.serverUrl": "https://your-plantuml-server/plantuml"
+}
+```
+
+#### Kroki mode
+
+```json
+{
+  "xmarkdown2pdf.plantuml.renderMode": "kroki"
+}
+```
+
+### Notes
+
+- For local mode, make sure Java is installed on your machine.
+- `xmarkdown2pdf.plantuml.jarPath` is only used when the path exists; otherwise the extension falls back to the managed jar.
+- PlantUML server URL must be `http` or `https`.
+
 ## Quick Start
 
 1. Open a Markdown file.
@@ -126,12 +187,47 @@ A larger sample document is included in the extension package as `sample.md`.
 | `xmarkdown2pdf.pdf.format` | PDF page format | `A4` |
 | `xmarkdown2pdf.pdf.margin` | PDF margins | `20mm` on all sides |
 | `xmarkdown2pdf.pdf.printBackground` | Print backgrounds in PDF | `true` |
+| `xmarkdown2pdf.pdf.browserExecutablePath` | Local Chromium/Chrome executable path for PDF export | empty |
+| `xmarkdown2pdf.pdf.launchArgs` | Browser launch arguments for PDF export | `--no-sandbox`, `--disable-setuid-sandbox`, `--disable-dev-shm-usage` |
 | `xmarkdown2pdf.plantuml.renderMode` | PlantUML render backend | `local` |
 | `xmarkdown2pdf.plantuml.serverUrl` | PlantUML server URL when using server mode | empty |
 | `xmarkdown2pdf.plantuml.jarPath` | Path to `plantuml.jar` for local mode | empty |
 | `xmarkdown2pdf.preview.scrollSync` | Sync editor selection to preview | `true` |
 | `xmarkdown2pdf.preview.theme` | Preview/export theme | `github` |
 | `xmarkdown2pdf.preview.customCssPath` | Custom CSS path for `custom` theme | empty |
+| `xmarkdown2pdf.preview.mermaidJsPath` | Custom Mermaid JS path | empty |
+| `xmarkdown2pdf.preview.highlightJsPath` | Custom Highlight JS path | empty |
+
+### Use User-Downloaded JS Libraries
+
+If you downloaded your own JS files, point settings to those absolute paths.
+When a custom path is missing or invalid, xMarkdown2PDF automatically falls back to bundled libraries.
+
+```json
+{
+  "xmarkdown2pdf.preview.mermaidJsPath": "/absolute/path/to/mermaid.min.js",
+  "xmarkdown2pdf.preview.highlightJsPath": "/absolute/path/to/highlight.min.js"
+}
+```
+
+### Use a User-Downloaded Browser for PDF Export
+
+If you already have Chromium or Chrome installed/downloaded locally, you can use it instead of Puppeteer's managed browser.
+
+```json
+{
+  "xmarkdown2pdf.pdf.browserExecutablePath": "/absolute/path/to/chrome-or-chromium",
+  "xmarkdown2pdf.pdf.launchArgs": [
+    "--no-sandbox",
+    "--disable-setuid-sandbox",
+    "--disable-dev-shm-usage"
+  ]
+}
+```
+
+Notes:
+- `xmarkdown2pdf.pdf.browserExecutablePath` must be the exact executable file path, not a folder.
+- If the path is empty or invalid, xMarkdown2PDF falls back to Puppeteer's default browser resolution.
 
 ## PlantUML Modes
 
