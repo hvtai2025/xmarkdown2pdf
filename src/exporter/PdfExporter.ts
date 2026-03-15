@@ -18,12 +18,18 @@ export class PdfExporter {
   static async export(
     fragment: string,
     outputPath: string,
-    context: vscode.ExtensionContext
+    context: vscode.ExtensionContext,
+    options: { documentTitle?: string } = {}
   ): Promise<void> {
     const settings = Settings.get();
 
     const html = buildFullHtmlPage(
-      { fragment, embedScripts: true, forExport: true },
+      {
+        fragment,
+        documentTitle: options.documentTitle,
+        embedScripts: true,
+        forExport: true,
+      },
       context
     );
 
@@ -74,6 +80,7 @@ export class PdfExporter {
         path: outputPath,
         format: settings.pdfFormat as any,
         margin: settings.pdfMargin,
+        outline: settings.exportIncludeOutline,
         printBackground: settings.pdfPrintBackground,
         ...brandTemplates,
       });

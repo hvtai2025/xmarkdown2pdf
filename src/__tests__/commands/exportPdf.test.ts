@@ -36,5 +36,8 @@ describe('registerExportPdf', () => {
     expect(fragment).toContain('<a href="#overview">Overview</a>');
     expect(fragment).toContain('<a href="#scope">Scope</a>');
     expect(fragment).toContain('<h1 id="overview">Overview</h1>');
+    expect((PdfExporter.export as jest.Mock).mock.calls[0][3]).toEqual({
+      documentTitle: 'Overview',
+    });
   });
 });

@@ -28,12 +28,14 @@ export function registerExportPdf(context: vscode.ExtensionContext): void {
         { location: vscode.ProgressLocation.Notification, title: 'Exporting PDF…', cancellable: false },
         async () => {
           const settings = Settings.get();
-          const fragment = await pipeline.render(document.getText(), {
+          const renderedDocument = await pipeline.renderDocument(document.getText(), {
             includeToc: settings.exportIncludeToc,
             tocTitle: settings.exportTocTitle,
             tocMaxDepth: settings.exportTocMaxDepth,
           });
-          await PdfExporter.export(fragment, outPath, context);
+          await PdfExporter.export(renderedDocument.fragment, outPath, context, {
+            documentTitle: renderedDocument.title,
+          });
         }
       );
 

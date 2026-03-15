@@ -43,11 +43,24 @@ describe('MarkdownPipeline', () => {
       tocMaxDepth: 2,
     });
 
-    expect(html).toContain('<nav class="table-of-contents"');
+    expect(html).toContain('<nav class="table-of-contents" aria-label="Table of contents" role="doc-toc">');
     expect(html).toContain('<p class="table-of-contents__title">Contents</p>');
     expect(html).toContain('<a href="#intro">Intro</a>');
     expect(html).toContain('<a href="#details">Details</a>');
     expect(html.indexOf('<nav class="table-of-contents"')).toBeLessThan(html.indexOf('<h1 id="intro">Intro</h1>'));
+  });
+
+  test('renderDocument exposes the first heading as the document title', async () => {
+    const rendered = await pipeline.renderDocument('# Report\n\n## Scope', {
+      includeToc: true,
+    });
+
+    expect(rendered.title).toBe('Report');
+    expect(rendered.headings).toEqual([
+      { id: 'report', level: 1, text: 'Report' },
+      { id: 'scope', level: 2, text: 'Scope' },
+    ]);
+    expect(rendered.fragment).toContain('<h1 id="report">Report</h1>');
   });
 
   test('limits generated table of contents to the configured heading depth', async () => {

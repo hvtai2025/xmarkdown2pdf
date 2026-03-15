@@ -48,6 +48,7 @@ Choose other extensions if you want:
 - Export `.md` to `.html`
 - Export `.md` to `.pdf`
 - Generate a linked table of contents for exported HTML and PDF
+- Generate viewer-friendly document outlines for exported HTML and PDF
 - Add configurable branded PDF headers and footers
 - Render Mermaid diagrams in preview and export
 - Render PlantUML diagrams to inline SVG before export
@@ -155,6 +156,7 @@ Use your own custom jar path:
 
 Exported files are written next to the source Markdown file using the same base name.
 By default, exports include a linked table of contents generated from document headings.
+PDF exports also enable browser-supported outline bookmarks by default, and HTML exports expose a semantic document outline from those same headings.
 
 ## Example
 
@@ -203,6 +205,7 @@ A larger sample document is included in the extension package as `sample.md`.
 | `xmarkdown2pdf.preview.mermaidJsPath` | Custom Mermaid JS path | empty |
 | `xmarkdown2pdf.preview.highlightJsPath` | Custom Highlight JS path | empty |
 | `xmarkdown2pdf.export.includeToc` | Include a generated table of contents in exported HTML and PDF | `true` |
+| `xmarkdown2pdf.export.includeOutline` | Generate document outline metadata for exported HTML and PDF | `true` |
 | `xmarkdown2pdf.export.tocTitle` | Title shown above the generated table of contents | `Table of Contents` |
 | `xmarkdown2pdf.export.tocMaxDepth` | Deepest heading level included in the generated table of contents | `3` |
 | `xmarkdown2pdf.brand.enabled` | Enable PDF branding header/footer | `false` |

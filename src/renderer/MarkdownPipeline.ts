@@ -9,10 +9,16 @@ export interface RenderOptions {
   tocMaxDepth?: number;
 }
 
-interface HeadingEntry {
+export interface HeadingEntry {
   id: string;
   level: number;
   text: string;
+}
+
+export interface RenderedDocument {
+  fragment: string;
+  headings: HeadingEntry[];
+  title: string;
 }
 
 interface RenderEnvironment {
@@ -22,6 +28,7 @@ interface RenderEnvironment {
 type HeadingTreeNode = HeadingEntry & { children: HeadingTreeNode[] };
 
 const DEFAULT_TOC_TITLE = 'Table of Contents';
+const DEFAULT_DOCUMENT_TITLE = 'Markdown Document';
 
 /**
  * Central markdown rendering pipeline.
@@ -55,22 +62,37 @@ export class MarkdownPipeline {
    * PlantUML rendering is async; everything else is sync inside markdown-it.
    */
   async render(markdown: string, options: RenderOptions = {}): Promise<string> {
+    const renderedDocument = await this.renderDocument(markdown, options);
+    return renderedDocument.fragment;
+  }
+
+  async renderDocument(markdown: string, options: RenderOptions = {}): Promise<RenderedDocument> {
     const env: RenderEnvironment = {};
     // PlantUML plugin replaces fences with placeholders during md.render(),
     // then resolves them asynchronously.
     const rendered = this.md.render(markdown, env);
-    const fragment = await PlantUmlPlugin.resolveAsync(rendered);
+    const baseFragment = await PlantUmlPlugin.resolveAsync(rendered);
+    const headings = env.xmarkdown2pdfHeadings ?? [];
+    const title = headings[0]?.text ?? DEFAULT_DOCUMENT_TITLE;
 
     if (!options.includeToc) {
-      return fragment;
+      return {
+        fragment: baseFragment,
+        headings,
+        title,
+      };
     }
 
-    const toc = buildToc(env.xmarkdown2pdfHeadings ?? [], {
+    const toc = buildToc(headings, {
       title: options.tocTitle,
       maxDepth: options.tocMaxDepth,
     });
 
-    return toc ? `${toc}\n${fragment}` : fragment;
+    return {
+      fragment: toc ? `${toc}\n${baseFragment}` : baseFragment,
+      headings,
+      title,
+    };
   }
 
   private enableHeadingAnchors(): void {
@@ -142,7 +164,7 @@ function buildToc(headings: HeadingEntry[], options: { title?: string; maxDepth?
   const tree = buildHeadingTree(filteredHeadings);
 
   return [
-    '<nav class="table-of-contents" aria-label="Table of contents">',
+    '<nav class="table-of-contents" aria-label="Table of contents" role="doc-toc">',
     `  <p class="table-of-contents__title">${title}</p>`,
     renderHeadingList(tree, 1),
     '</nav>',

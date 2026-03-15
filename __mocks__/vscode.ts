@@ -9,6 +9,7 @@ import * as path from 'path';
 // ── workspace ──────────────────────────────────────────────────
 const defaultConfig: Record<string, unknown> = {
   'export.includeToc': true,
+  'export.includeOutline': true,
   'export.tocTitle': 'Table of Contents',
   'export.tocMaxDepth': 3,
   'pdf.format': 'A4',

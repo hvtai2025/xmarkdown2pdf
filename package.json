@@ -127,6 +127,11 @@
           "default": true,
           "description": "Include a generated table of contents in exported HTML and PDF documents."
         },
+        "xmarkdown2pdf.export.includeOutline": {
+          "type": "boolean",
+          "default": true,
+          "description": "Generate document outline metadata for exported HTML and PDF files when supported by the viewer."
+        },
         "xmarkdown2pdf.export.tocTitle": {
           "type": "string",
           "default": "Table of Contents",

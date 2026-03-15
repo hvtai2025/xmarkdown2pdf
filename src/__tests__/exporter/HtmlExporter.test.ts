@@ -68,7 +68,8 @@ describe('HtmlExporter.export()', () => {
     await HtmlExporter.export('# Overview\n\n## Scope', outPath, makeContext());
 
     const content = await fs.readFile(outPath, 'utf-8');
-    expect(content).toContain('<nav class="table-of-contents"');
+    expect(content).toContain('<title>Overview</title>');
+    expect(content).toContain('<nav class="table-of-contents" aria-label="Table of contents" role="doc-toc">');
     expect(content).toContain('<a href="#overview">Overview</a>');
     expect(content).toContain('<a href="#scope">Scope</a>');
   });
@@ -99,12 +100,12 @@ describe('HtmlExporter.export()', () => {
     expect(content).toContain('mermaid.initialize(');
   });
 
-  test('includes the content div wrapper', async () => {
+  test('includes the content main wrapper', async () => {
     const outPath = path.join(tmpDir, 'content.html');
     await HtmlExporter.export('text', outPath, makeContext());
 
     const content = await fs.readFile(outPath, 'utf-8');
-    expect(content).toContain('<div id="content">');
+    expect(content).toContain('<main id="content">');
   });
 
   // ── self-contained export ─────────────────────────────────────

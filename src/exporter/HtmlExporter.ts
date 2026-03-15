@@ -27,13 +27,18 @@ export class HtmlExporter {
     pipeline: MarkdownPipeline = new MarkdownPipeline()
   ): Promise<void> {
     const settings = Settings.get();
-    const fragment = await pipeline.render(markdown, {
+    const renderedDocument = await pipeline.renderDocument(markdown, {
       includeToc: settings.exportIncludeToc,
       tocTitle: settings.exportTocTitle,
       tocMaxDepth: settings.exportTocMaxDepth,
     });
     const html = buildFullHtmlPage(
-      { fragment, embedScripts: true, forExport: true },
+      {
+        fragment: renderedDocument.fragment,
+        documentTitle: renderedDocument.title,
+        embedScripts: true,
+        forExport: true,
+      },
       context
     );
     await fs.writeFile(outputPath, html, 'utf-8');

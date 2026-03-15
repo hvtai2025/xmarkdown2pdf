@@ -12,6 +12,7 @@ interface PdfMargin {
 
 interface ExtensionSettings {
   exportIncludeToc: boolean;
+  exportIncludeOutline: boolean;
   exportTocTitle: string;
   exportTocMaxDepth: number;
   previewIncludeToc: boolean;
@@ -50,6 +51,7 @@ export class Settings {
 
     return {
       exportIncludeToc: cfg.get<boolean>('export.includeToc', true),
+      exportIncludeOutline: cfg.get<boolean>('export.includeOutline', true),
       exportTocTitle: cfg.get<string>('export.tocTitle', 'Table of Contents').trim() || 'Table of Contents',
       exportTocMaxDepth: Settings.resolveHeadingDepth(cfg.get<number>('export.tocMaxDepth', 3)),
       previewIncludeToc: cfg.get<boolean>('preview.includeToc', false),
