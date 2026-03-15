@@ -14,6 +14,20 @@
   "categories": [
     "Other"
   ],
+  "keywords": [
+    "markdown",
+    "pdf",
+    "branding",
+    "markdown pdf branding",
+    "pdf header",
+    "pdf footer",
+    "pdf export",
+    "mermaid",
+    "html",
+    "plantuml",
+    "uml",
+    "planttext"
+  ],
   "activationEvents": [
     "onLanguage:markdown"
   ],
