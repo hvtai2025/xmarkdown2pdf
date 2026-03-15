@@ -3,7 +3,7 @@
   "displayName": "xMarkdown2PDF",
   "description": "Convert Markdown (with Mermaid & PlantUML) to HTML or PDF locally",
   "version": "0.1.0",
-  "publisher": "xmarkdown2pdf",
+  "publisher": "HVT-AI",
   "repository": {
     "type": "git",
     "url": "https://github.com/hvtai2025/xmarkdown2pdf.git"
