@@ -1,5 +1,21 @@
 # Release Notes
 
+## 0.1.4 - 2026-03-21
+
+### Added
+- New export title settings:
+  - `xmarkdown2pdf.export.titleSource` (`firstHeading` or `fileName`)
+  - `xmarkdown2pdf.export.documentTitle` (explicit custom title override)
+- Export commands now support using the source file name as the HTML/PDF document title.
+
+### Changed
+- When branding is enabled, PDF export enforces minimum top/bottom margins to reserve space for header/footer templates and avoid content overlap.
+- README settings table updated with the new title configuration options.
+
+### Quality
+- Added tests for file-name title mode and custom title override in HTML and PDF export flows.
+- Added regression tests for branded PDF minimum top/bottom margin behavior.
+
 ## 0.1.3 - 2026-03-21
 
 ### Added

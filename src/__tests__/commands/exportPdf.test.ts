@@ -72,4 +72,69 @@ describe('registerExportPdf', () => {
       'xmarkdown2pdf.pdf.browserExecutablePath'
     );
   });
+
+  test('uses file name as document title when export.titleSource is fileName', async () => {
+    (vscode.workspace.getConfiguration as jest.Mock).mockReturnValueOnce({
+      get: jest.fn(<T>(key: string, defaultValue: T): T => {
+        if (key === 'export.titleSource') {
+          return 'fileName' as T;
+        }
+        return defaultValue;
+      }),
+    });
+
+    const context = { subscriptions: [] } as any;
+    registerExportPdf(context);
+
+    const callback = (vscode.commands.registerCommand as jest.Mock).mock.calls[0][1];
+    const document = {
+      languageId: 'markdown',
+      fileName: '/tmp/My Project Status.md',
+      getText: () => '# Overview',
+      uri: { fsPath: '/tmp/My Project Status.md', toString: () => 'file:///tmp/My Project Status.md' },
+    };
+
+    (vscode.window as any).activeTextEditor = { document };
+    (vscode.window.showInformationMessage as jest.Mock).mockResolvedValue(undefined);
+
+    await callback();
+
+    expect((PdfExporter.export as jest.Mock).mock.calls[0][3]).toEqual({
+      documentTitle: 'My Project Status',
+    });
+  });
+
+  test('uses custom export.documentTitle when configured', async () => {
+    (vscode.workspace.getConfiguration as jest.Mock).mockReturnValueOnce({
+      get: jest.fn(<T>(key: string, defaultValue: T): T => {
+        if (key === 'export.titleSource') {
+          return 'fileName' as T;
+        }
+        if (key === 'export.documentTitle') {
+          return 'Quarterly Engineering Report' as T;
+        }
+        return defaultValue;
+      }),
+    });
+
+    const context = { subscriptions: [] } as any;
+    registerExportPdf(context);
+
+    const callback = (vscode.commands.registerCommand as jest.Mock).mock.calls[0][1];
+    const document = {
+      languageId: 'markdown',
+      fileName: '/tmp/report.md',
+      getText: () => '# Overview',
+      uri: { fsPath: '/tmp/report.md', toString: () => 'file:///tmp/report.md' },
+    };
+
+    (vscode.window as any).activeTextEditor = { document };
+    (vscode.window.showInformationMessage as jest.Mock).mockResolvedValue(undefined);
+
+    await callback();
+
+    expect((PdfExporter.export as jest.Mock).mock.calls[0][3]).toEqual({
+      documentTitle: 'Quarterly Engineering Report',
+    });
+  });
 });

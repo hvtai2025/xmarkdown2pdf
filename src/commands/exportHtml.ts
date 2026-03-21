@@ -23,7 +23,7 @@ export function registerExportHtml(context: vscode.ExtensionContext): void {
       await vscode.window.withProgress(
         { location: vscode.ProgressLocation.Notification, title: 'Exporting HTML…', cancellable: false },
         async () => {
-          await HtmlExporter.export(document.getText(), outPath, context);
+          await HtmlExporter.export(document.getText(), outPath, context, undefined, { sourceFilePath: mdPath });
         }
       );
 

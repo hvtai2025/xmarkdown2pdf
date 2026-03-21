@@ -148,4 +148,56 @@ describe('PdfExporter (Phase 3)', () => {
       executablePath: expect.any(String),
     }));
   });
+
+  test('enforces minimum top/bottom margins when branding is enabled', async () => {
+    (vscode.workspace.getConfiguration as jest.Mock).mockReturnValueOnce({
+      get: jest.fn(<T>(key: string, defaultValue: T): T => {
+        if (key === 'brand.enabled') {
+          return true as T;
+        }
+        if (key === 'pdf.margin') {
+          return { top: '10mm', right: '20mm', bottom: '12mm', left: '20mm' } as T;
+        }
+        return defaultValue;
+      }),
+    });
+
+    await PdfExporter.export('<h1>Hi</h1>', '/tmp/test.pdf', context);
+
+    expect(pdf).toHaveBeenCalledWith(expect.objectContaining({
+      margin: {
+        top: '25mm',
+        right: '20mm',
+        bottom: '25mm',
+        left: '20mm',
+      },
+      displayHeaderFooter: true,
+    }));
+  });
+
+  test('keeps larger configured top/bottom margins when branding is enabled', async () => {
+    (vscode.workspace.getConfiguration as jest.Mock).mockReturnValueOnce({
+      get: jest.fn(<T>(key: string, defaultValue: T): T => {
+        if (key === 'brand.enabled') {
+          return true as T;
+        }
+        if (key === 'pdf.margin') {
+          return { top: '30mm', right: '20mm', bottom: '28mm', left: '20mm' } as T;
+        }
+        return defaultValue;
+      }),
+    });
+
+    await PdfExporter.export('<h1>Hi</h1>', '/tmp/test.pdf', context);
+
+    expect(pdf).toHaveBeenCalledWith(expect.objectContaining({
+      margin: {
+        top: '30mm',
+        right: '20mm',
+        bottom: '28mm',
+        left: '20mm',
+      },
+      displayHeaderFooter: true,
+    }));
+  });
 });

@@ -84,7 +84,7 @@ Search for `xMarkdown2PDF` in Extensions.
 ### From a VSIX file
 
 ```bash
-code --install-extension /absolute/path/to/xmarkdown2pdf-0.1.3.vsix
+code --install-extension /absolute/path/to/xmarkdown2pdf-0.1.4.vsix
 ```
 
 ## Browser Setup for PDF Export
@@ -229,6 +229,8 @@ A larger sample document is included in the extension package as `sample.md`.
 | `xmarkdown2pdf.export.includeOutline` | Generate document outline metadata for exported HTML and PDF | `true` |
 | `xmarkdown2pdf.export.tocTitle` | Title shown above the generated table of contents | `Table of Contents` |
 | `xmarkdown2pdf.export.tocMaxDepth` | Deepest heading level included in the generated table of contents | `3` |
+| `xmarkdown2pdf.export.titleSource` | Source used for exported document title when `export.documentTitle` is empty (`firstHeading` or `fileName`) | `firstHeading` |
+| `xmarkdown2pdf.export.documentTitle` | Custom exported document title that overrides `export.titleSource` when set | empty |
 | `xmarkdown2pdf.brand.enabled` | Enable PDF branding header/footer | `false` |
 | `xmarkdown2pdf.brand.companyName` | Company name used by default brand templates | empty |
 | `xmarkdown2pdf.brand.logoPath` | Absolute path to logo image for default brand header (PNG, JPEG, SVG, GIF, WebP) | empty |

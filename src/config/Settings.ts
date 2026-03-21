@@ -15,6 +15,8 @@ interface ExtensionSettings {
   exportIncludeOutline: boolean;
   exportTocTitle: string;
   exportTocMaxDepth: number;
+  exportTitleSource: 'firstHeading' | 'fileName';
+  exportDocumentTitle: string;
   previewIncludeToc: boolean;
   pdfFormat: string;
   pdfMargin: PdfMargin;
@@ -54,6 +56,8 @@ export class Settings {
       exportIncludeOutline: cfg.get<boolean>('export.includeOutline', true),
       exportTocTitle: cfg.get<string>('export.tocTitle', 'Table of Contents').trim() || 'Table of Contents',
       exportTocMaxDepth: Settings.resolveHeadingDepth(cfg.get<number>('export.tocMaxDepth', 3)),
+      exportTitleSource: Settings.resolveTitleSource(cfg.get<string>('export.titleSource', 'firstHeading')),
+      exportDocumentTitle: cfg.get<string>('export.documentTitle', '').trim(),
       previewIncludeToc: cfg.get<boolean>('preview.includeToc', false),
       pdfFormat: cfg.get<string>('pdf.format', 'A4'),
       pdfMargin: cfg.get<PdfMargin>('pdf.margin', {
@@ -132,5 +136,9 @@ export class Settings {
       return 3;
     }
     return Math.min(6, Math.max(1, value));
+  }
+
+  private static resolveTitleSource(value: string): 'firstHeading' | 'fileName' {
+    return value === 'fileName' ? 'fileName' : 'firstHeading';
   }
 }

@@ -24,6 +24,8 @@ export class PdfBrowserPathError extends Error {
  *  4. Print to PDF and close the browser.
  */
 export class PdfExporter {
+  private static readonly BRAND_MIN_VERTICAL_MARGIN_MM = 25;
+
   private static getWindowsBrowserCandidatePaths(): string[] {
     const programFiles = process.env.PROGRAMFILES;
     const programFilesX86 = process.env['PROGRAMFILES(X86)'];
@@ -80,6 +82,51 @@ export class PdfExporter {
     } catch {
       throw new PdfBrowserPathError(executablePath);
     }
+  }
+
+  private static parseLengthToMm(length: string): number | undefined {
+    const match = /^\s*([0-9]*\.?[0-9]+)\s*(mm|cm|in|px|pt)\s*$/i.exec(length);
+    if (!match) {
+      return undefined;
+    }
+
+    const value = Number(match[1]);
+    const unit = match[2].toLowerCase();
+    if (!Number.isFinite(value)) {
+      return undefined;
+    }
+
+    switch (unit) {
+      case 'mm':
+        return value;
+      case 'cm':
+        return value * 10;
+      case 'in':
+        return value * 25.4;
+      case 'px':
+        return value * 25.4 / 96;
+      case 'pt':
+        return value * 25.4 / 72;
+      default:
+        return undefined;
+    }
+  }
+
+  private static enforceBrandMargins(margin: { top: string; right: string; bottom: string; left: string }): {
+    top: string;
+    right: string;
+    bottom: string;
+    left: string;
+  } {
+    const minMm = PdfExporter.BRAND_MIN_VERTICAL_MARGIN_MM;
+    const topMm = PdfExporter.parseLengthToMm(margin.top);
+    const bottomMm = PdfExporter.parseLengthToMm(margin.bottom);
+
+    return {
+      ...margin,
+      top: topMm === undefined || topMm < minMm ? `${minMm}mm` : margin.top,
+      bottom: bottomMm === undefined || bottomMm < minMm ? `${minMm}mm` : margin.bottom,
+    };
   }
 
   static async export(
@@ -143,11 +190,14 @@ export class PdfExporter {
       ).catch(() => { /* timeout is acceptable — diagrams may still render partially */ });
 
       const brandTemplates = buildBrandTemplates(settings.brand);
+      const pdfMargin = settings.brand.enabled
+        ? PdfExporter.enforceBrandMargins(settings.pdfMargin)
+        : settings.pdfMargin;
 
       await page.pdf({
         path: outputPath,
         format: settings.pdfFormat as any,
-        margin: settings.pdfMargin,
+        margin: pdfMargin,
         outline: settings.exportIncludeOutline,
         printBackground: settings.pdfPrintBackground,
         ...brandTemplates,

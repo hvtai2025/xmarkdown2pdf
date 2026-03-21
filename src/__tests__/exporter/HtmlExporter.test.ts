@@ -1,6 +1,7 @@
 import * as path from 'path';
 import * as fs from 'fs/promises';
 import * as os from 'os';
+import * as vscode from 'vscode';
 import { HtmlExporter } from '../../exporter/HtmlExporter';
 import { MarkdownPipeline } from '../../renderer/MarkdownPipeline';
 
@@ -72,6 +73,42 @@ describe('HtmlExporter.export()', () => {
     expect(content).toContain('<nav class="table-of-contents" aria-label="Table of contents" role="doc-toc">');
     expect(content).toContain('<a href="#overview">Overview</a>');
     expect(content).toContain('<a href="#scope">Scope</a>');
+  });
+
+  test('uses source file name as document title when export.titleSource is fileName', async () => {
+    (vscode.workspace.getConfiguration as jest.Mock).mockReturnValueOnce({
+      get: jest.fn(<T>(key: string, defaultValue: T): T => {
+        if (key === 'export.titleSource') {
+          return 'fileName' as T;
+        }
+        return defaultValue;
+      }),
+    });
+
+    const outPath = path.join(tmpDir, 'title-from-file.html');
+    await HtmlExporter.export('Plain text without heading', outPath, makeContext(), undefined, {
+      sourceFilePath: '/tmp/Team Weekly Update.md',
+    });
+
+    const content = await fs.readFile(outPath, 'utf-8');
+    expect(content).toContain('<title>Team Weekly Update</title>');
+  });
+
+  test('uses export.documentTitle when configured', async () => {
+    (vscode.workspace.getConfiguration as jest.Mock).mockReturnValueOnce({
+      get: jest.fn(<T>(key: string, defaultValue: T): T => {
+        if (key === 'export.documentTitle') {
+          return 'Customer-Facing Release Notes' as T;
+        }
+        return defaultValue;
+      }),
+    });
+
+    const outPath = path.join(tmpDir, 'title-custom.html');
+    await HtmlExporter.export('# Heading', outPath, makeContext());
+
+    const content = await fs.readFile(outPath, 'utf-8');
+    expect(content).toContain('<title>Customer-Facing Release Notes</title>');
   });
 
   test('includes rendered paragraph text', async () => {

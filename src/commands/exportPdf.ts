@@ -6,6 +6,22 @@ import { Settings } from '../config/Settings';
 
 const pipeline = new MarkdownPipeline();
 
+function resolveExportDocumentTitle(
+  renderedTitle: string,
+  sourceFilePath: string,
+  settings: ReturnType<typeof Settings.get>
+): string {
+  if (settings.exportDocumentTitle) {
+    return settings.exportDocumentTitle;
+  }
+
+  if (settings.exportTitleSource === 'fileName') {
+    return path.parse(sourceFilePath).name;
+  }
+
+  return renderedTitle;
+}
+
 export function registerExportPdf(context: vscode.ExtensionContext): void {
   context.subscriptions.push(
     vscode.commands.registerCommand('xmarkdown2pdf.exportPdf', async (uri?: vscode.Uri) => {
@@ -35,7 +51,7 @@ export function registerExportPdf(context: vscode.ExtensionContext): void {
               tocMaxDepth: settings.exportTocMaxDepth,
             });
             await PdfExporter.export(renderedDocument.fragment, outPath, context, {
-              documentTitle: renderedDocument.title,
+              documentTitle: resolveExportDocumentTitle(renderedDocument.title, mdPath, settings),
             });
           }
         );

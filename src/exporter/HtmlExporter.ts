@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 import * as fs from 'fs/promises';
+import * as path from 'path';
 import { MarkdownPipeline } from '../renderer/MarkdownPipeline';
 import { buildFullHtmlPage } from '../preview/previewTemplate';
 import { Settings } from '../config/Settings';
@@ -24,7 +25,8 @@ export class HtmlExporter {
     markdown: string,
     outputPath: string,
     context: vscode.ExtensionContext,
-    pipeline: MarkdownPipeline = new MarkdownPipeline()
+    pipeline: MarkdownPipeline = new MarkdownPipeline(),
+    options: { sourceFilePath?: string } = {}
   ): Promise<void> {
     const settings = Settings.get();
     const renderedDocument = await pipeline.renderDocument(markdown, {
@@ -32,10 +34,18 @@ export class HtmlExporter {
       tocTitle: settings.exportTocTitle,
       tocMaxDepth: settings.exportTocMaxDepth,
     });
+
+    const sourceTitlePath = options.sourceFilePath ?? outputPath;
+    const resolvedDocumentTitle = settings.exportDocumentTitle
+      ? settings.exportDocumentTitle
+      : settings.exportTitleSource === 'fileName'
+        ? path.parse(sourceTitlePath).name
+        : renderedDocument.title;
+
     const html = buildFullHtmlPage(
       {
         fragment: renderedDocument.fragment,
-        documentTitle: renderedDocument.title,
+        documentTitle: resolvedDocumentTitle,
         embedScripts: true,
         forExport: true,
       },

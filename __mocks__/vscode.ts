@@ -12,6 +12,8 @@ const defaultConfig: Record<string, unknown> = {
   'export.includeOutline': true,
   'export.tocTitle': 'Table of Contents',
   'export.tocMaxDepth': 3,
+  'export.titleSource': 'firstHeading',
+  'export.documentTitle': '',
   'pdf.format': 'A4',
   'pdf.margin': { top: '20mm', right: '20mm', bottom: '20mm', left: '20mm' },
   'pdf.printBackground': true,
