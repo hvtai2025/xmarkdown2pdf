@@ -105,7 +105,7 @@ describe('HtmlExporter.export()', () => {
     await HtmlExporter.export('text', outPath, makeContext());
 
     const content = await fs.readFile(outPath, 'utf-8');
-    expect(content).toContain('<main id="content">');
+    expect(content).toContain('<div id="content">');
   });
 
   // ── self-contained export ─────────────────────────────────────
