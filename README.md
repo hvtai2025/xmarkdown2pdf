@@ -6,6 +6,7 @@ xMarkdown2PDF is built for teams that want a focused workflow:
 - live side-by-side preview while editing Markdown
 - local HTML export
 - local PDF export
+- branded PDF headers and footers for company-ready documents
 - Mermaid support in preview and export
 - PlantUML support in preview and export
 - versioned runtime libraries that you can upgrade intentionally
@@ -47,9 +48,9 @@ Choose other extensions if you want:
 - Optionally show a generated table of contents in the preview
 - Export `.md` to `.html`
 - Export `.md` to `.pdf`
+- Add professional PDF branding with configurable company header/footer templates
 - Generate a linked table of contents for exported HTML and PDF
 - Generate viewer-friendly document outlines for exported HTML and PDF
-- Add configurable branded PDF headers and footers
 - Render Mermaid diagrams in preview and export
 - Render PlantUML diagrams to inline SVG before export
 - Support PlantUML render modes:
@@ -85,6 +86,26 @@ Search for `xMarkdown2PDF` in Extensions.
 ```bash
 code --install-extension /absolute/path/to/xmarkdown2pdf-0.1.1.vsix
 ```
+
+## Browser Setup for PDF Export
+
+If you already have Chromium or Chrome installed/downloaded locally, you can use it instead of Puppeteer's managed browser.
+
+```json
+{
+  "xmarkdown2pdf.pdf.browserExecutablePath": "/absolute/path/to/chrome-or-chromium",
+  "xmarkdown2pdf.pdf.launchArgs": [
+    "--no-sandbox",
+    "--disable-setuid-sandbox",
+    "--disable-dev-shm-usage"
+  ]
+}
+```
+
+Notes:
+- `xmarkdown2pdf.pdf.browserExecutablePath` must be the exact executable file path, not a folder.
+- If the path is empty, xMarkdown2PDF auto-detects Windows Chrome/Edge from common install paths first, then falls back to Puppeteer's default browser resolution.
+- If the path is configured but invalid, export fails with an explicit error and a shortcut to open the setting.
 
 ## Library Setup on Your Machine
 
@@ -193,7 +214,7 @@ A larger sample document is included in the extension package as `sample.md`.
 | `xmarkdown2pdf.pdf.format` | PDF page format | `A4` |
 | `xmarkdown2pdf.pdf.margin` | PDF margins | `20mm` on all sides |
 | `xmarkdown2pdf.pdf.printBackground` | Print backgrounds in PDF | `true` |
-| `xmarkdown2pdf.pdf.browserExecutablePath` | Local Chromium/Chrome executable path for PDF export | empty |
+| `xmarkdown2pdf.pdf.browserExecutablePath` | Local Chromium/Chrome executable path for PDF export (when empty on Windows, xMarkdown2PDF auto-discovers common Chrome/Edge install paths) | empty |
 | `xmarkdown2pdf.pdf.launchArgs` | Browser launch arguments for PDF export | `--no-sandbox`, `--disable-setuid-sandbox`, `--disable-dev-shm-usage` |
 | `xmarkdown2pdf.plantuml.renderMode` | PlantUML render backend | `local` |
 | `xmarkdown2pdf.plantuml.serverUrl` | PlantUML server URL when using server mode | empty |
@@ -263,25 +284,6 @@ When a custom path is missing or invalid, xMarkdown2PDF automatically falls back
   "xmarkdown2pdf.preview.highlightJsPath": "/absolute/path/to/highlight.min.js"
 }
 ```
-
-### Use a User-Downloaded Browser for PDF Export
-
-If you already have Chromium or Chrome installed/downloaded locally, you can use it instead of Puppeteer's managed browser.
-
-```json
-{
-  "xmarkdown2pdf.pdf.browserExecutablePath": "/absolute/path/to/chrome-or-chromium",
-  "xmarkdown2pdf.pdf.launchArgs": [
-    "--no-sandbox",
-    "--disable-setuid-sandbox",
-    "--disable-dev-shm-usage"
-  ]
-}
-```
-
-Notes:
-- `xmarkdown2pdf.pdf.browserExecutablePath` must be the exact executable file path, not a folder.
-- If the path is empty or invalid, xMarkdown2PDF falls back to Puppeteer's default browser resolution.
 
 ## PlantUML Modes
 

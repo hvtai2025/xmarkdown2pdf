@@ -175,7 +175,7 @@
         "xmarkdown2pdf.pdf.browserExecutablePath": {
           "type": "string",
           "default": "",
-          "description": "Path to a local Chromium/Chrome executable for PDF export. Leave empty to use Puppeteer's managed browser."
+          "description": "Absolute path to a local Chromium/Chrome executable for PDF export (for example on Windows: C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe). Leave empty to use Puppeteer's managed browser."
         },
         "xmarkdown2pdf.pdf.launchArgs": {
           "type": "array",

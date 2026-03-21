@@ -1,5 +1,13 @@
 # Release Notes
 
+## 0.1.3 - 2026-03-21
+
+### Added
+- PDF export now auto-detects Windows Chrome browser installations when `xmarkdown2pdf.pdf.browserExecutablePath` is empty.
+
+### Highlight
+- PDF branding (custom header/footer templates, company identity settings, and sample templates) is now a core highlighted feature in product documentation.
+
 ## 0.1.2 - 2026-03-15
 
 ### Added

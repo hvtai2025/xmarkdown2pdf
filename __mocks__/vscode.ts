@@ -33,6 +33,7 @@ export const workspace = {
     get: jest.fn(<T>(key: string, defaultValue: T): T => {
       return (defaultConfig[key] as T) ?? defaultValue;
     }),
+    update: jest.fn().mockResolvedValue(undefined),
   })),
   onDidChangeTextDocument: jest.fn(() => ({ dispose: jest.fn() })),
 };
@@ -44,6 +45,7 @@ export const window = {
   showWarningMessage: jest.fn(),
   showInformationMessage: jest.fn(),
   showErrorMessage: jest.fn(),
+  showInputBox: jest.fn(),
   withProgress: jest.fn(async (_opts: unknown, task: () => Promise<void>) => task()),
   createOutputChannel: jest.fn(() => ({
     appendLine: jest.fn(),
@@ -100,6 +102,12 @@ export const ProgressLocation = {
   SourceControl: 1,
   Window: 10,
   Notification: 15,
+};
+
+export const ConfigurationTarget = {
+  Global: 1,
+  Workspace: 2,
+  WorkspaceFolder: 3,
 };
 
 // ── EventEmitter ───────────────────────────────────────────────

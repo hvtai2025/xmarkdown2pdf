@@ -60,7 +60,7 @@ export class Settings {
         top: '20mm', right: '20mm', bottom: '20mm', left: '20mm',
       }),
       pdfPrintBackground: cfg.get<boolean>('pdf.printBackground', true),
-      pdfBrowserExecutablePath: Settings.resolveOptionalFilePath(cfg.get<string>('pdf.browserExecutablePath', '')),
+      pdfBrowserExecutablePath: Settings.resolveConfiguredPdfBrowserPath(cfg.get<string>('pdf.browserExecutablePath', '')),
       pdfLaunchArgs: Settings.resolveStringArray(cfg.get<string[]>('pdf.launchArgs', DEFAULT_PDF_LAUNCH_ARGS)),
       plantumlRenderMode: cfg.get<'local' | 'server' | 'kroki'>('plantuml.renderMode', 'local'),
       plantumlServerUrl: serverUrl,
@@ -109,6 +109,14 @@ export class Settings {
       return path.resolve(configuredPath);
     }
     return '';
+  }
+
+  private static resolveConfiguredPdfBrowserPath(configuredPath: string): string {
+    const trimmed = configuredPath.trim();
+    if (!trimmed) {
+      return '';
+    }
+    return path.resolve(trimmed);
   }
 
   private static resolveStringArray(value: unknown): string[] {

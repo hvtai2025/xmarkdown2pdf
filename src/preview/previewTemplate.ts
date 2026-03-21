@@ -5,6 +5,7 @@ import { Settings } from '../config/Settings';
 
 interface TemplateOptions {
   fragment: string;
+  documentTitle?: string;
   embedScripts: boolean;   // true for static HTML export; false for webview (uses vscode-resource URIs)
   forExport: boolean;      // true suppresses the live-update script
 }
@@ -23,6 +24,7 @@ export function buildFullHtmlPage(
 ): string {
   const settings = Settings.get();
   const mediaDir = path.join(context.extensionPath, 'media');
+  const safeTitle = (options.documentTitle ?? 'Markdown Preview').trim() || 'Markdown Preview';
 
   // For export: read raw file content to inline directly into <script> tags.
   // For webview: resolve to a vscode-resource URI used as <script src="...">
@@ -79,7 +81,7 @@ export function buildFullHtmlPage(
                  img-src 'self' data: ${webview ? webview.cspSource : ''};
                  font-src 'self' ${webview ? webview.cspSource : ''};">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Markdown Preview</title>
+  <title>${escapeHtml(safeTitle)}</title>
   ${css}
 </head>
 <body class="theme-${settings.previewTheme}">
@@ -156,4 +158,13 @@ function generateNonce(): string {
     nonce += chars.charAt(Math.floor(Math.random() * chars.length));
   }
   return nonce;
+}
+
+function escapeHtml(text: string): string {
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
 }

@@ -5,6 +5,15 @@ import { buildFullHtmlPage } from '../preview/previewTemplate';
 import { Settings } from '../config/Settings';
 import { buildBrandTemplates } from '../brand/BrandTemplate';
 
+export class PdfBrowserPathError extends Error {
+  constructor(configuredPath: string) {
+    super(
+      `Configured browser executable was not found: ${configuredPath}. Update xmarkdown2pdf.pdf.browserExecutablePath to a valid Chrome/Chromium executable path or clear it to use Puppeteer's managed browser.`
+    );
+    this.name = 'PdfBrowserPathError';
+  }
+}
+
 /**
  * PdfExporter
  *
@@ -15,6 +24,64 @@ import { buildBrandTemplates } from '../brand/BrandTemplate';
  *  4. Print to PDF and close the browser.
  */
 export class PdfExporter {
+  private static getWindowsBrowserCandidatePaths(): string[] {
+    const programFiles = process.env.PROGRAMFILES;
+    const programFilesX86 = process.env['PROGRAMFILES(X86)'];
+    const localAppData = process.env.LOCALAPPDATA;
+
+    const candidates = [
+      programFiles ? path.win32.join(programFiles, 'Google', 'Chrome', 'Application', 'chrome.exe') : '',
+      programFilesX86 ? path.win32.join(programFilesX86, 'Google', 'Chrome', 'Application', 'chrome.exe') : '',
+      localAppData ? path.win32.join(localAppData, 'Google', 'Chrome', 'Application', 'chrome.exe') : '',
+      programFiles ? path.win32.join(programFiles, 'Microsoft', 'Edge', 'Application', 'msedge.exe') : '',
+      programFilesX86 ? path.win32.join(programFilesX86, 'Microsoft', 'Edge', 'Application', 'msedge.exe') : '',
+      localAppData ? path.win32.join(localAppData, 'Microsoft', 'Edge', 'Application', 'msedge.exe') : '',
+    ].filter(Boolean);
+
+    return [...new Set(candidates)];
+  }
+
+  private static async findExistingFile(candidatePaths: string[]): Promise<string | undefined> {
+    for (const candidatePath of candidatePaths) {
+      try {
+        const stat = await fs.stat(candidatePath);
+        if (stat.isFile()) {
+          return candidatePath;
+        }
+      } catch {
+        // Try next candidate
+      }
+    }
+    return undefined;
+  }
+
+  private static async resolveLaunchExecutablePath(configuredPath: string): Promise<string | undefined> {
+    if (configuredPath) {
+      await PdfExporter.ensureBrowserExecutablePathExists(configuredPath);
+      return configuredPath;
+    }
+
+    if (process.platform !== 'win32') {
+      return undefined;
+    }
+
+    return PdfExporter.findExistingFile(PdfExporter.getWindowsBrowserCandidatePaths());
+  }
+
+  private static async ensureBrowserExecutablePathExists(executablePath: string): Promise<void> {
+    if (!executablePath) {
+      return;
+    }
+    try {
+      const stat = await fs.stat(executablePath);
+      if (!stat.isFile()) {
+        throw new PdfBrowserPathError(executablePath);
+      }
+    } catch {
+      throw new PdfBrowserPathError(executablePath);
+    }
+  }
+
   static async export(
     fragment: string,
     outputPath: string,
@@ -39,8 +106,9 @@ export class PdfExporter {
       headless: true,
       args: settings.pdfLaunchArgs,
     };
-    if (settings.pdfBrowserExecutablePath) {
-      launchOptions.executablePath = settings.pdfBrowserExecutablePath;
+    const resolvedExecutablePath = await PdfExporter.resolveLaunchExecutablePath(settings.pdfBrowserExecutablePath);
+    if (resolvedExecutablePath) {
+      launchOptions.executablePath = resolvedExecutablePath;
     }
     const browser = await puppeteer.launch(launchOptions);
 
