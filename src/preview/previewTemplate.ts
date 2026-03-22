@@ -46,7 +46,8 @@ export function buildFullHtmlPage(
     settings.previewHighlightJsPath
   );
 
-  const mathJaxScript = resolveScript(
+  // MathJax fallback: use tex-chtml.js if tex-chtml-full.js is missing (for v4+)
+  let mathJaxScript = resolveScript(
     path.join(mediaDir, 'libs', 'tex-chtml-full.js'),
     'tex-chtml-full.js',
     options.embedScripts,
@@ -54,6 +55,17 @@ export function buildFullHtmlPage(
     context,
     settings.previewMathJaxJsPath
   );
+  // If tex-chtml-full.js does not exist, fallback to tex-chtml.js
+  if (!fs.existsSync(path.join(mediaDir, 'libs', 'tex-chtml-full.js')) && fs.existsSync(path.join(mediaDir, 'libs', 'tex-chtml.js'))) {
+    mathJaxScript = resolveScript(
+      path.join(mediaDir, 'libs', 'tex-chtml.js'),
+      'tex-chtml.js',
+      options.embedScripts,
+      webview,
+      context,
+      settings.previewMathJaxJsPath?.replace('tex-chtml-full.js', 'tex-chtml.js')
+    );
+  }
 
   const css = resolveStyleSrc(
     path.join(mediaDir, 'preview.css'),

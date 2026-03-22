@@ -116,16 +116,26 @@ export class LibManager {
     context: vscode.ExtensionContext,
     log: vscode.OutputChannel
   ): Promise<void> {
-    const template = entry.cdn ?? entry.downloadUrl ?? '';
+    let template = entry.cdn ?? entry.downloadUrl ?? '';
     if (!template) {
       throw new Error('No download template found in libs.json entry.');
     }
-    const url = template.replace(/{version}/g, newVersion);
-    LibManager.assertAllowedDownloadUrl(url);
-
-    const destPath = path.join(context.extensionPath, entry.localPath);
+    let url = template.replace(/{version}/g, newVersion);
+    let destPath = path.join(context.extensionPath, entry.localPath);
     await fs.mkdir(path.dirname(destPath), { recursive: true });
 
+    // Special handling for MathJax: for v4+, always use tex-chtml.js (tex-chtml-full.js no longer exists)
+    if (entry.localPath.endsWith('tex-chtml-full.js') && newVersion.startsWith('4')) {
+      // Always use tex-chtml.js for v4+
+      url = template.replace('tex-chtml-full.js', 'tex-chtml.js').replace(/{version}/g, newVersion);
+      destPath = destPath.replace('tex-chtml-full.js', 'tex-chtml.js');
+      LibManager.assertAllowedDownloadUrl(url);
+      log.appendLine(`  Downloading: ${url}`);
+      await LibManager.download(url, destPath);
+      return;
+    }
+
+    LibManager.assertAllowedDownloadUrl(url);
     log.appendLine(`  Downloading: ${url}`);
     await LibManager.download(url, destPath);
   }
