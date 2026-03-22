@@ -8,6 +8,7 @@ xMarkdown2PDF is built for teams that want a focused workflow:
 - local PDF export
 - branded PDF headers and footers for company-ready documents
 - Mermaid support in preview and export
+- LaTeX formulas in preview and export
 - PlantUML support in preview and export
 - versioned runtime libraries that you can upgrade intentionally
 
@@ -52,6 +53,7 @@ Choose other extensions if you want:
 - Generate a linked table of contents for exported HTML and PDF
 - Generate viewer-friendly document outlines for exported HTML and PDF
 - Render Mermaid diagrams in preview and export
+- Render LaTeX math formulas in preview and export
 - Render PlantUML diagrams to inline SVG before export
 - Support PlantUML render modes:
   - local
@@ -119,6 +121,7 @@ After installing the extension, run this once so diagram libraries are present a
 This command downloads and stores managed runtime files under `media/libs/`:
 - `mermaid.min.js`
 - `highlight.min.js`
+- `tex-chtml-full.js` (MathJax)
 - `plantuml.jar`
 
 ### Configure PlantUML Linking in Settings
@@ -205,6 +208,18 @@ System --> User: HTML / PDF
 ```
 ````
 
+### LaTeX Formulas
+
+````markdown
+Euler identity inline: $e^{i\pi} + 1 = 0$
+
+Display mode:
+
+$$
+\int_{0}^{\infty} e^{-x^2} \, dx = \frac{\sqrt{\pi}}{2}
+$$
+````
+
 A larger sample document is included in the extension package as `sample.md`.
 
 ## Settings
@@ -225,6 +240,7 @@ A larger sample document is included in the extension package as `sample.md`.
 | `xmarkdown2pdf.preview.customCssPath` | Custom CSS path for `custom` theme | empty |
 | `xmarkdown2pdf.preview.mermaidJsPath` | Custom Mermaid JS path | empty |
 | `xmarkdown2pdf.preview.highlightJsPath` | Custom Highlight JS path | empty |
+| `xmarkdown2pdf.preview.mathJaxJsPath` | Custom MathJax `tex-chtml-full.js` path | empty |
 | `xmarkdown2pdf.export.includeToc` | Include a generated table of contents in exported HTML and PDF | `true` |
 | `xmarkdown2pdf.export.includeOutline` | Generate document outline metadata for exported HTML and PDF | `true` |
 | `xmarkdown2pdf.export.tocTitle` | Title shown above the generated table of contents | `Table of Contents` |

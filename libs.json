@@ -10,6 +10,11 @@
     "cdn": "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/{version}/highlight.min.js",
     "localPath": "media/libs/highlight.min.js"
   },
+  "mathjax": {
+    "version": "3.2.2",
+    "cdn": "https://cdn.jsdelivr.net/npm/mathjax@{version}/es5/tex-chtml-full.js",
+    "localPath": "media/libs/tex-chtml-full.js"
+  },
   "plantuml": {
     "version": "1.2026.2",
     "downloadUrl": "https://github.com/plantuml/plantuml/releases/download/v{version}/plantuml-{version}.jar",

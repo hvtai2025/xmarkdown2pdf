@@ -189,6 +189,22 @@ export class PdfExporter {
         })
       ).catch(() => { /* timeout is acceptable — diagrams may still render partially */ });
 
+      // Wait for MathJax startup/typesetting so formulas are visible in generated PDF.
+      await page.evaluate(async () => {
+        const mathJax = (globalThis as any).MathJax;
+        if (!mathJax) {
+          return;
+        }
+
+        if (mathJax.startup?.promise) {
+          await mathJax.startup.promise;
+        }
+
+        if (mathJax.typesetPromise) {
+          await mathJax.typesetPromise([(globalThis as any).document?.getElementById('content')]);
+        }
+      }).catch(() => { /* math typeset best-effort */ });
+
       const brandTemplates = buildBrandTemplates(settings.brand);
       const pdfMargin = settings.brand.enabled
         ? PdfExporter.enforceBrandMargins(settings.pdfMargin)

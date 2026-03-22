@@ -33,7 +33,8 @@ export function buildFullHtmlPage(
     'mermaid.min.js',
     options.embedScripts,
     webview,
-    context
+    context,
+    settings.previewMermaidJsPath
   );
 
   const highlightScript = resolveScript(
@@ -41,7 +42,17 @@ export function buildFullHtmlPage(
     'highlight.min.js',
     options.embedScripts,
     webview,
-    context
+    context,
+    settings.previewHighlightJsPath
+  );
+
+  const mathJaxScript = resolveScript(
+    path.join(mediaDir, 'libs', 'tex-chtml-full.js'),
+    'tex-chtml-full.js',
+    options.embedScripts,
+    webview,
+    context,
+    settings.previewMathJaxJsPath
   );
 
   const css = resolveStyleSrc(
@@ -62,6 +73,9 @@ export function buildFullHtmlPage(
           document.getElementById('content').innerHTML = msg.html;
           mermaid.run();
           hljs.highlightAll();
+          if (window.MathJax?.typesetPromise) {
+            window.MathJax.typesetPromise([document.getElementById('content')]).catch(() => {});
+          }
         } else if (msg.type === 'scrollToLine') {
           // Basic scroll sync via data-source-line attributes (set by the pipeline)
           const el = document.querySelector('[data-source-line="' + msg.line + '"]');
@@ -87,11 +101,32 @@ export function buildFullHtmlPage(
 <body class="theme-${settings.previewTheme}">
   <div id="content">${options.fragment}</div>
 
+  <script nonce="${nonce}">
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\\\(', '\\\\)']],
+        displayMath: [['$$', '$$'], ['\\\\[', '\\\\]']],
+        processEscapes: true,
+      },
+      options: {
+        skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+      },
+      startup: {
+        typeset: true,
+      },
+    };
+  </script>
   ${renderScriptTag(highlightScript, nonce)}
   ${renderScriptTag(mermaidScript, nonce)}
+  ${renderScriptTag(mathJaxScript, nonce)}
   <script nonce="${nonce}">
     mermaid.initialize({ startOnLoad: true, theme: '${settings.previewTheme === 'dark' ? 'dark' : 'default'}' });
     hljs.highlightAll();
+    if (window.MathJax?.startup?.promise) {
+      window.MathJax.startup.promise
+        .then(() => window.MathJax.typesetPromise?.([document.getElementById('content')]))
+        .catch(() => {});
+    }
   </script>
   ${liveUpdateScript}
 </body>
@@ -114,13 +149,18 @@ function resolveScript(
   filename: string,
   embed: boolean,
   webview: vscode.Webview | undefined,
-  context: vscode.ExtensionContext
+  context: vscode.ExtensionContext,
+  customPath?: string
 ): ScriptRef {
+  const usePath = customPath && fs.existsSync(customPath) ? customPath : fsPath;
   if (embed) {
-    const content = fs.existsSync(fsPath)
-      ? fs.readFileSync(fsPath, 'utf-8')
+    const content = fs.existsSync(usePath)
+      ? fs.readFileSync(usePath, 'utf-8')
       : `console.warn('${filename} not found');`;
     return { kind: 'inline', content };
+  }
+  if (customPath && fs.existsSync(customPath)) {
+    return { kind: 'src', url: webview!.asWebviewUri(vscode.Uri.file(customPath)).toString() };
   }
   const url = webview!.asWebviewUri(
     vscode.Uri.joinPath(context.extensionUri, 'media', 'libs', filename)

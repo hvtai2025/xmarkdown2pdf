@@ -124,6 +124,7 @@ export class PreviewPanel {
       settings.previewCustomCssPath,
       settings.previewMermaidJsPath,
       settings.previewHighlightJsPath,
+      settings.previewMathJaxJsPath,
     ].filter((value): value is string => value.length > 0);
 
     for (const customPath of customPaths) {

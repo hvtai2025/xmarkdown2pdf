@@ -1,3 +1,36 @@
+---
+
+## 8. LaTeX/MathJax: Formula Examples
+
+This section demonstrates inline and display math using LaTeX syntax. These formulas should render as typeset math in both preview and export (HTML/PDF) if MathJax is working correctly.
+
+### Inline math
+
+Euler's identity: $e^{i\pi} + 1 = 0$
+
+Pythagorean theorem: $a^2 + b^2 = c^2$
+
+
+### Display math
+
+$$
+\int_{-\infty}^{\infty} e^{-x^2} \, dx = \sqrt{\pi}
+$$
+
+$$
+\nabla \cdot \vec{E} = \frac{\rho}{\varepsilon_0}
+$$
+
+$$
+\sum_{n=1}^{\infty} \frac{1}{n^2} = \frac{\pi^2}{6}
+$$
+
+$$
+\left(\begin{array}{cc}
+    a & b \\
+    c & d
+\end{array}\right)
+$$
 # Sample Document: Complex Diagrams
 
 This document demonstrates complex **Mermaid** and **PlantUML** diagrams for testing the xmarkdown2pdf extension.

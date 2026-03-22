@@ -31,6 +31,7 @@ interface ExtensionSettings {
   previewCustomCssPath: string;
   previewMermaidJsPath: string;
   previewHighlightJsPath: string;
+  previewMathJaxJsPath: string;
   brand: BrandSettings;
 }
 
@@ -74,6 +75,7 @@ export class Settings {
       previewCustomCssPath: cfg.get<string>('preview.customCssPath', ''),
       previewMermaidJsPath: Settings.resolveOptionalFilePath(cfg.get<string>('preview.mermaidJsPath', '')),
       previewHighlightJsPath: Settings.resolveOptionalFilePath(cfg.get<string>('preview.highlightJsPath', '')),
+      previewMathJaxJsPath: Settings.resolveOptionalFilePath(cfg.get<string>('preview.mathJaxJsPath', '')),
       brand: {
         enabled: cfg.get<boolean>('brand.enabled', false),
         companyName: cfg.get<string>('brand.companyName', ''),

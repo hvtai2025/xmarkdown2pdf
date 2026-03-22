@@ -2,7 +2,7 @@
   "name": "xmarkdown2pdf",
   "displayName": "xMarkdown2PDF",
   "description": "Convert Markdown (with Mermaid & PlantUML) to HTML or PDF locally",
-  "version": "0.1.4",
+  "version": "0.2.0",
   "publisher": "HVT-AI",
   "repository": {
     "type": "git",
@@ -23,6 +23,8 @@
     "pdf footer",
     "pdf export",
     "mermaid",
+    "latex",
+    "mathjax",
     "html",
     "plantuml",
     "uml",
@@ -266,6 +268,11 @@
           "type": "string",
           "default": "",
           "description": "Path to a custom highlight.min.js file. Leave empty to use the bundled library."
+        },
+        "xmarkdown2pdf.preview.mathJaxJsPath": {
+          "type": "string",
+          "default": "",
+          "description": "Path to a custom MathJax tex-chtml-full.js file. Leave empty to use the bundled library."
         },
         "xmarkdown2pdf.brand.enabled": {
           "type": "boolean",

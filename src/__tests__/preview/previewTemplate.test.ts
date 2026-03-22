@@ -117,6 +117,19 @@ describe('buildFullHtmlPage (embed mode — for HTML export)', () => {
     expect(html).toContain('hljs.highlightAll()');
   });
 
+  test('configures MathJax delimiters for inline and block LaTeX', () => {
+    const html = build();
+    expect(html).toContain('inlineMath');
+    expect(html).toContain("['$', '$']");
+    expect(html).toContain("['$$', '$$']");
+  });
+
+  test('loads MathJax runtime hooks', () => {
+    const html = build();
+    expect(html).toContain('window.MathJax =');
+    expect(html).toContain('typesetPromise');
+  });
+
   // ── live-update script (forExport flag) ───────────────────────
 
   test('forExport:true suppresses the postMessage live-update script', () => {
@@ -127,6 +140,7 @@ describe('buildFullHtmlPage (embed mode — for HTML export)', () => {
   test('forExport:false includes the postMessage live-update script', () => {
     const html = build({ forExport: false });
     expect(html).toContain("window.addEventListener('message'");
+    expect(html).toContain('MathJax.typesetPromise');
   });
 
   // ── theme ─────────────────────────────────────────────────────
