@@ -1,3 +1,19 @@
+# 0.2.0 - 2026-03-22
+
+### Added
+- LaTeX/MathJax formula rendering in preview and export (HTML/PDF) with zero config required.
+- MathJax runtime is now managed as a versioned library (libs.json, auto-upgradeable).
+- Automatic first-run library bootstrap: missing managed libraries are downloaded on extension activation (no manual step required).
+- New setting: `xmarkdown2pdf.preview.mathJaxJsPath` for custom MathJax runtime path (optional override).
+- Sample document now includes a LaTeX/MathJax section for instant verification.
+- Tests for MathJax config, script injection, and live-update typesetting.
+
+### Changed
+- README updated: features, settings, and usage for LaTeX/MathJax, and sample section.
+
+### Quality
+- All tests and type checks pass for this release.
+
 # Release Notes
 
 ## 0.1.4 - 2026-03-21
