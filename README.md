@@ -109,7 +109,7 @@ Notes:
 - If the path is empty, xMarkdown2PDF auto-detects Windows Chrome/Edge from common install paths first, then falls back to Puppeteer's default browser resolution.
 - If the path is configured but invalid, export fails with an explicit error and a shortcut to open the setting.
 
-## Library Setup on Your Machine
+## Library Setup and Degraded Mode
 
 After installing the extension, run this once so diagram libraries are present and up to date:
 
@@ -117,6 +117,23 @@ After installing the extension, run this once so diagram libraries are present a
 2. Run `Markdown: Upgrade Libraries`.
 3. Wait for the success notification.
 4. If needed, open output channel `xMarkdown2PDF — Upgrade` to see details.
+
+### Proxy/Network Issues and Degraded Mode
+
+If a library fails to download (for example, due to a proxy or network restriction), the extension will alert you and enter "degraded mode." In degraded mode, features that depend on missing libraries are disabled, but the rest of the extension continues to work.
+
+**Manual Recovery:**
+
+1. Download the missing library file(s) manually from a trusted source (see the output/error message for the required file name).
+2. Place the file(s) on your machine.
+3. Open VS Code settings and set the appropriate path(s):
+  - `xmarkdown2pdf.preview.mermaidJsPath`
+  - `xmarkdown2pdf.preview.highlightJsPath`
+  - `xmarkdown2pdf.preview.mathJaxJsPath`
+  - `xmarkdown2pdf.plantuml.jarPath`
+4. The extension will use your provided path(s) instead of the missing managed library.
+
+You can always re-run `Markdown: Upgrade Libraries` after fixing your network/proxy to restore managed libraries.
 
 This command downloads and stores managed runtime files under `media/libs/`:
 - `mermaid.min.js`

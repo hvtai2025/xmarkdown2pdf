@@ -33,6 +33,9 @@ const ALLOWED_DOWNLOAD_HOSTS = new Set([
  * downloads updated files, and persists the new versions back to libs.json.
  */
 export class LibManager {
+  // Track missing libraries for degraded mode
+  static missingLibs: Set<string> = new Set();
+  static degradedMode = false;
   static async upgradeAll(
     context: vscode.ExtensionContext,
     log: vscode.OutputChannel
@@ -42,6 +45,9 @@ export class LibManager {
     const manifest: LibsManifest = JSON.parse(manifestRaw);
 
     let changed = false;
+    LibManager.missingLibs.clear();
+    LibManager.degradedMode = false;
+    const failed: string[] = [];
 
     for (const [name, entry] of Object.entries(manifest)) {
       log.appendLine(`[${name}] Current version: ${entry.version}`);
@@ -58,12 +64,25 @@ export class LibManager {
         }
       } catch (err) {
         log.appendLine(`[${name}] ERROR: ${String(err)}\n`);
+        LibManager.degradedMode = true;
+        LibManager.missingLibs.add(entry.localPath);
+        failed.push(name);
       }
     }
 
     if (changed) {
       await fs.writeFile(manifestPath, JSON.stringify(manifest, null, 2), 'utf-8');
       log.appendLine('libs.json updated.');
+    }
+
+    if (failed.length > 0) {
+      const settingsAction = 'Open Library Settings';
+      const msg = `Some libraries failed to upgrade: ${failed.join(', ')}.\n\nYou can manually download the missing files and set their paths in the extension settings (e.g., previewMermaidJsPath, previewHighlightJsPath, previewMathJaxJsPath, plantumlJarPath).`;
+      vscode.window.showErrorMessage(msg, settingsAction).then(choice => {
+        if (choice === settingsAction) {
+          vscode.commands.executeCommand('workbench.action.openSettings', 'xmarkdown2pdf');
+        }
+      });
     }
   }
 
@@ -118,6 +137,8 @@ export class LibManager {
   ): Promise<void> {
     let template = entry.cdn ?? entry.downloadUrl ?? '';
     if (!template) {
+      LibManager.degradedMode = true;
+      LibManager.missingLibs.add(entry.localPath);
       throw new Error('No download template found in libs.json entry.');
     }
     let url = template.replace(/{version}/g, newVersion);
@@ -129,15 +150,32 @@ export class LibManager {
       // Always use tex-chtml.js for v4+
       url = template.replace('tex-chtml-full.js', 'tex-chtml.js').replace(/{version}/g, newVersion);
       destPath = destPath.replace('tex-chtml-full.js', 'tex-chtml.js');
-      LibManager.assertAllowedDownloadUrl(url);
-      log.appendLine(`  Downloading: ${url}`);
-      await LibManager.download(url, destPath);
+      try {
+        LibManager.assertAllowedDownloadUrl(url);
+        log.appendLine(`  Downloading: ${url}`);
+        await LibManager.download(url, destPath);
+      } catch (err) {
+        LibManager.degradedMode = true;
+        LibManager.missingLibs.add(entry.localPath);
+        throw err;
+      }
       return;
     }
 
-    LibManager.assertAllowedDownloadUrl(url);
-    log.appendLine(`  Downloading: ${url}`);
-    await LibManager.download(url, destPath);
+    try {
+      LibManager.assertAllowedDownloadUrl(url);
+      log.appendLine(`  Downloading: ${url}`);
+      await LibManager.download(url, destPath);
+    } catch (err) {
+      LibManager.degradedMode = true;
+      LibManager.missingLibs.add(entry.localPath);
+      throw err;
+    }
+  }
+
+  // Helper to check if a library is missing (for degraded mode)
+  static isLibMissing(localPath: string): boolean {
+    return LibManager.missingLibs.has(localPath);
   }
 
   static async download(url: string, dest: string): Promise<void> {

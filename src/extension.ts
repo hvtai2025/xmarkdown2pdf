@@ -8,6 +8,9 @@ import { registerOpenPreview } from './commands/openPreview';
 import { registerUpgradeLibs } from './commands/upgradeLibs';
 
 
+let degradedMode = false;
+let missingLibs: string[] = [];
+
 async function ensureManagedLibs(context: vscode.ExtensionContext): Promise<void> {
   const manifestPath = path.join(context.extensionPath, 'libs.json');
   let manifest: Record<string, { localPath: string; version: string } & Record<string, any>>;
@@ -35,14 +38,28 @@ async function ensureManagedLibs(context: vscode.ExtensionContext): Promise<void
         log.appendLine(`[${name}] Done.`);
       } catch (err) {
         log.appendLine(`[${name}] ERROR: ${String(err)}`);
+        degradedMode = true;
+        missingLibs.push(name);
       }
     }
     log.appendLine('Library bootstrap complete.');
+  }
+  if (degradedMode && missingLibs.length > 0) {
+    const settingsAction = 'Open Library Settings';
+    const msg = `Some required libraries failed to download: ${missingLibs.join(', ')}.\n\nThis may be due to a proxy or network issue.\n\nYou can manually download the missing files and set their paths in the extension settings (e.g., previewMermaidJsPath, previewHighlightJsPath, previewMathJaxJsPath, plantumlJarPath).`;
+    vscode.window.showErrorMessage(msg, settingsAction).then(choice => {
+      if (choice === settingsAction) {
+        vscode.commands.executeCommand('workbench.action.openSettings', 'xmarkdown2pdf');
+      }
+    });
   }
 }
 
 export async function activate(context: vscode.ExtensionContext): Promise<void> {
   await ensureManagedLibs(context);
+  if (degradedMode) {
+    // Optionally, set a context key or global state for degraded mode if needed elsewhere
+  }
   registerOpenPreview(context);
   registerExportHtml(context);
   registerExportPdf(context);

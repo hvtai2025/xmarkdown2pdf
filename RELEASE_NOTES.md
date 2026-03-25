@@ -1,3 +1,15 @@
+# 0.2.2 - 2026-03-25
+
+### Added
+- Degraded mode: If a library fails to download (e.g., due to proxy/network issues), the extension alerts the user and continues to function with limited features. Affected features are disabled until the missing library is provided.
+- User is prompted to manually download missing libraries and set their paths in settings if automatic download fails.
+- Improved error handling and user guidance for library download failures and upgrades.
+
+### Changed
+- README updated: documents degraded mode, proxy/manual library setup, and improved error handling for library downloads.
+
+### Quality
+- All tests and type checks pass for this release.
 # 0.2.0 - 2026-03-22
 
 ### Added

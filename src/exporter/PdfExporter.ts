@@ -174,9 +174,11 @@ export class PdfExporter {
         }
       });
 
+
       await page.setContent(html, { waitUntil: 'domcontentloaded' });
 
-      // Wait for mermaid.js to finish rendering all diagrams
+      // Debug: Mermaid rendering wait
+      console.log('[xmarkdown2pdf] Waiting for mermaid diagrams to render...');
       await page.evaluate(() =>
         new Promise<void>(resolve => {
           const doc = (globalThis as any).document as any;
@@ -188,8 +190,10 @@ export class PdfExporter {
           check();
         })
       ).catch(() => { /* timeout is acceptable — diagrams may still render partially */ });
+      console.log('[xmarkdown2pdf] Mermaid rendering wait complete.');
 
-      // Wait for MathJax startup/typesetting so formulas are visible in generated PDF.
+      // Debug: MathJax typesetting wait
+      console.log('[xmarkdown2pdf] Waiting for MathJax typesetting...');
       await page.evaluate(async () => {
         const mathJax = (globalThis as any).MathJax;
         if (!mathJax) {
@@ -204,6 +208,7 @@ export class PdfExporter {
           await mathJax.typesetPromise([(globalThis as any).document?.getElementById('content')]);
         }
       }).catch(() => { /* math typeset best-effort */ });
+      console.log('[xmarkdown2pdf] MathJax typesetting wait complete.');
 
       const brandTemplates = buildBrandTemplates(settings.brand);
       const pdfMargin = settings.brand.enabled
