@@ -40,7 +40,10 @@ export class LibManager {
     context: vscode.ExtensionContext,
     log: vscode.OutputChannel
   ): Promise<void> {
+    log.appendLine('[DIAG] Starting upgradeAll');
+    log.appendLine(`[DIAG] context.extensionPath: ${context.extensionPath}`);
     const manifestPath = path.join(context.extensionPath, 'libs.json');
+    log.appendLine(`[DIAG] manifestPath: ${manifestPath}`);
     const manifestRaw = await fs.readFile(manifestPath, 'utf-8');
     const manifest: LibsManifest = JSON.parse(manifestRaw);
 
@@ -50,9 +53,12 @@ export class LibManager {
     const failed: string[] = [];
 
     for (const [name, entry] of Object.entries(manifest)) {
+      log.appendLine(`[DIAG] Processing: ${name}`);
+      log.appendLine(`[DIAG] Entry: ${JSON.stringify(entry)}`);
       log.appendLine(`[${name}] Current version: ${entry.version}`);
       try {
         const latest = await LibManager.fetchLatestVersion(name, entry);
+        log.appendLine(`[DIAG] Latest version for ${name}: ${latest}`);
         if (latest && latest !== entry.version) {
           log.appendLine(`[${name}] Upgrading ${entry.version} → ${latest}`);
           await LibManager.downloadLib(entry, latest, context, log);
@@ -63,6 +69,7 @@ export class LibManager {
           log.appendLine(`[${name}] Already up to date.\n`);
         }
       } catch (err) {
+        log.appendLine(`[DIAG] Error while processing ${name}: ${String(err)}`);
         log.appendLine(`[${name}] ERROR: ${String(err)}\n`);
         LibManager.degradedMode = true;
         LibManager.missingLibs.add(entry.localPath);
@@ -135,6 +142,7 @@ export class LibManager {
     context: vscode.ExtensionContext,
     log: vscode.OutputChannel
   ): Promise<void> {
+    log.appendLine(`[DIAG] downloadLib: entry=${JSON.stringify(entry)}, newVersion=${newVersion}`);
     let template = entry.cdn ?? entry.downloadUrl ?? '';
     if (!template) {
       LibManager.degradedMode = true;
@@ -143,6 +151,7 @@ export class LibManager {
     }
     let url = template.replace(/{version}/g, newVersion);
     let destPath = path.join(context.extensionPath, entry.localPath);
+    log.appendLine(`[DIAG] downloadLib: url=${url}, destPath=${destPath}`);
     await fs.mkdir(path.dirname(destPath), { recursive: true });
 
     // Special handling for MathJax: for v4+, always use tex-chtml.js (tex-chtml-full.js no longer exists)
@@ -150,11 +159,14 @@ export class LibManager {
       // Always use tex-chtml.js for v4+
       url = template.replace('tex-chtml-full.js', 'tex-chtml.js').replace(/{version}/g, newVersion);
       destPath = destPath.replace('tex-chtml-full.js', 'tex-chtml.js');
+      log.appendLine(`[DIAG] MathJax v4+ special case: url=${url}, destPath=${destPath}`);
       try {
         LibManager.assertAllowedDownloadUrl(url);
         log.appendLine(`  Downloading: ${url}`);
         await LibManager.download(url, destPath);
+        log.appendLine(`[DIAG] Downloaded to ${destPath}`);
       } catch (err) {
+        log.appendLine(`[DIAG] Error downloading MathJax: ${String(err)}`);
         LibManager.degradedMode = true;
         LibManager.missingLibs.add(entry.localPath);
         throw err;
@@ -166,7 +178,9 @@ export class LibManager {
       LibManager.assertAllowedDownloadUrl(url);
       log.appendLine(`  Downloading: ${url}`);
       await LibManager.download(url, destPath);
+      log.appendLine(`[DIAG] Downloaded to ${destPath}`);
     } catch (err) {
+      log.appendLine(`[DIAG] Error downloading ${entry.localPath}: ${String(err)}`);
       LibManager.degradedMode = true;
       LibManager.missingLibs.add(entry.localPath);
       throw err;
@@ -180,9 +194,13 @@ export class LibManager {
 
   static async download(url: string, dest: string): Promise<void> {
     const bytes = await LibManager.fetchBytes(url, 5);
+    console.log(`[DIAG] Writing to ${dest}, bytes length: ${bytes.length}`);
     await fs.writeFile(dest, bytes);
     if (!fsSync.existsSync(dest)) {
+      console.log(`[DIAG] File not found after write: ${dest}`);
       throw new Error(`Failed to write file: ${dest}`);
+    } else {
+      console.log(`[DIAG] File written successfully: ${dest}`);
     }
   }
 

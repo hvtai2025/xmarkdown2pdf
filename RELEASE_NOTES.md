@@ -1,3 +1,15 @@
+
+# 0.2.3 - 2026-03-28
+
+### Added
+- User-configurable MathJax timeout: New setting `xmarkdown2pdf.mathJaxTimeoutMs` allows users to increase the wait time for MathJax typesetting during PDF export. Useful for large or complex LaTeX documents.
+
+### Changed
+- README and settings table updated to document MathJax timeout option.
+
+### Quality
+- All tests and type checks pass for this release.
+
 # 0.2.2 - 2026-03-25
 
 ### Added

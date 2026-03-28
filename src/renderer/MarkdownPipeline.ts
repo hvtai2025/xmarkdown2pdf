@@ -1,7 +1,9 @@
 import MarkdownIt from 'markdown-it';
 import type { RendererPlugin } from './RendererPlugin';
+
 import { MermaidPlugin } from './plugins/MermaidPlugin';
 import { PlantUmlPlugin } from './plugins/PlantUmlPlugin';
+import { KaTeXPlugin } from './plugins/KaTeXPlugin';
 
 export interface RenderOptions {
   includeToc?: boolean;
@@ -47,6 +49,8 @@ export class MarkdownPipeline {
 
     this.enableHeadingAnchors();
 
+    // Register KaTeX for math pre-rendering
+    this.register(new KaTeXPlugin());
     this.register(new MermaidPlugin());
     this.register(new PlantUmlPlugin());
   }

@@ -2,7 +2,7 @@
   "name": "xmarkdown2pdf",
   "displayName": "xMarkdown2PDF",
   "description": "Convert Markdown (with Mermaid & PlantUML) to HTML or PDF locally",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "publisher": "HVT-AI",
   "repository": {
     "type": "git",
@@ -274,6 +274,13 @@
           "default": "",
           "description": "Path to a custom MathJax tex-chtml-full.js file. Leave empty to use the bundled library."
         },
+        "xmarkdown2pdf.mathJaxTimeoutMs": {
+          "type": "integer",
+          "default": 5000,
+          "minimum": 1000,
+          "maximum": 60000,
+          "description": "Timeout in milliseconds to wait for MathJax typesetting during PDF export. Increase for large/complex LaTeX documents."
+        },
         "xmarkdown2pdf.brand.enabled": {
           "type": "boolean",
           "default": false,
@@ -330,6 +337,7 @@
     "lint": "eslint src"
   },
   "dependencies": {
+    "katex": "^0.16.44",
     "node-plantuml": "^0.9.0"
   },
   "devDependencies": {

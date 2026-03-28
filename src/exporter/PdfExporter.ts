@@ -192,23 +192,43 @@ export class PdfExporter {
       ).catch(() => { /* timeout is acceptable — diagrams may still render partially */ });
       console.log('[xmarkdown2pdf] Mermaid rendering wait complete.');
 
-      // Debug: MathJax typesetting wait
-      console.log('[xmarkdown2pdf] Waiting for MathJax typesetting...');
-      await page.evaluate(async () => {
+
+      // Debug: MathJax typesetting wait with timeout
+      console.log('[xmarkdown2pdf] Waiting for MathJax typesetting (with timeout)...');
+      const mathJaxTimeoutMs = settings.mathJaxTimeoutMs || 5000; // User-configurable timeout
+      const mathJaxPromise = page.evaluate(async () => {
         const mathJax = (globalThis as any).MathJax;
         if (!mathJax) {
-          return;
+          return 'no-mathjax';
         }
-
-        if (mathJax.startup?.promise) {
-          await mathJax.startup.promise;
+        try {
+          if (mathJax.startup?.promise) {
+            await mathJax.startup.promise;
+          }
+          if (mathJax.typesetPromise) {
+            await mathJax.typesetPromise([(globalThis as any).document?.getElementById('content')]);
+          }
+          return 'done';
+        } catch {
+          return 'error';
         }
-
-        if (mathJax.typesetPromise) {
-          await mathJax.typesetPromise([(globalThis as any).document?.getElementById('content')]);
-        }
-      }).catch(() => { /* math typeset best-effort */ });
-      console.log('[xmarkdown2pdf] MathJax typesetting wait complete.');
+      });
+      let mathJaxResult = 'timeout';
+      try {
+        mathJaxResult = await Promise.race([
+          mathJaxPromise,
+          new Promise(resolve => setTimeout(() => resolve('timeout'), mathJaxTimeoutMs))
+        ]);
+      } catch {}
+      if (mathJaxResult === 'timeout') {
+        console.warn('[xmarkdown2pdf] MathJax typesetting timed out. Some math may not be fully rendered.');
+      } else if (mathJaxResult === 'error') {
+        console.warn('[xmarkdown2pdf] MathJax typesetting error.');
+      } else if (mathJaxResult === 'no-mathjax') {
+        console.log('[xmarkdown2pdf] MathJax not present, skipping typesetting.');
+      } else {
+        console.log('[xmarkdown2pdf] MathJax typesetting wait complete.');
+      }
 
       const brandTemplates = buildBrandTemplates(settings.brand);
       const pdfMargin = settings.brand.enabled

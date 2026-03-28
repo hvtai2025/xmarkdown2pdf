@@ -258,6 +258,7 @@ A larger sample document is included in the extension package as `sample.md`.
 | `xmarkdown2pdf.preview.mermaidJsPath` | Custom Mermaid JS path | empty |
 | `xmarkdown2pdf.preview.highlightJsPath` | Custom Highlight JS path | empty |
 | `xmarkdown2pdf.preview.mathJaxJsPath` | Custom MathJax `tex-chtml-full.js` path | empty |
+| `xmarkdown2pdf.mathJaxTimeoutMs` | Timeout (ms) to wait for MathJax typesetting during PDF export. Increase for large/complex LaTeX. | 5000 |
 | `xmarkdown2pdf.export.includeToc` | Include a generated table of contents in exported HTML and PDF | `true` |
 | `xmarkdown2pdf.export.includeOutline` | Generate document outline metadata for exported HTML and PDF | `true` |
 | `xmarkdown2pdf.export.tocTitle` | Title shown above the generated table of contents | `Table of Contents` |

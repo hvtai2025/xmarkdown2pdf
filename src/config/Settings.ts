@@ -32,6 +32,7 @@ interface ExtensionSettings {
   previewMermaidJsPath: string;
   previewHighlightJsPath: string;
   previewMathJaxJsPath: string;
+  mathJaxTimeoutMs: number;
   brand: BrandSettings;
 }
 
@@ -76,6 +77,7 @@ export class Settings {
       previewMermaidJsPath: Settings.resolveOptionalFilePath(cfg.get<string>('preview.mermaidJsPath', '')),
       previewHighlightJsPath: Settings.resolveOptionalFilePath(cfg.get<string>('preview.highlightJsPath', '')),
       previewMathJaxJsPath: Settings.resolveOptionalFilePath(cfg.get<string>('preview.mathJaxJsPath', '')),
+      mathJaxTimeoutMs: cfg.get<number>('mathJaxTimeoutMs', 5000),
       brand: {
         enabled: cfg.get<boolean>('brand.enabled', false),
         companyName: cfg.get<string>('brand.companyName', ''),
